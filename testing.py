@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 import numpy as np
-from load_data import PeakDataset
+from custom_dataset import PeakDataset
 
 #%% Function to run a model on the test set, returns the percent correct and nll
 def test_performance(net, test_set):

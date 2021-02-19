@@ -5,65 +5,32 @@ Main file to train and test networks and then analyze them
 #%%
 # TODO: automate early stopping
 # TODO: look at TQDM for progress
-# TODO: test cognitive model features by passing them as inputs
-# TODO: RSA?
 
 #%%
 import json
-import random
-import math
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import numpy as np
 from scipy import stats
 import pandas as pd
 import torch
-from torch.utils.data import random_split
 import torch.optim as optim
-from load_data import PeakDataset
+from custom_dataset import PeakDataset
 from training import train
 from network import BasicCNN, DeepCNN, BasicLinear, DeepLinear
 from testing import test_performance, test_performance_user, test_with_guesses, test_by_move
 
-
-#%% DATA INITIALIZATION
-
-# Read in the filtered list of games
-with open('train_paths.txt', 'r') as filehandle:
-    train_paths = json.load(filehandle)
-
-# For now, randomly sample a specific number of games
-games_subset = random.sample(train_paths, 100000)
-
-# Initialize the dataset
-dataset = PeakDataset(games_subset)
-
-# Randomly split the dataset into train and validation sets (95%, 5%)
-train_set, val_set = random_split(dataset, [math.ceil(len(dataset)*.95), math.floor(len(dataset)*.05)])
-
-#Save the splits out for future use
-torch.save(train_set, 'train_data.pth')
-torch.save(val_set, 'val_data.pth')
-
-# Read in test paths
-with open('test_paths.txt', 'r') as filehandle:
-    test_paths = json.load(filehandle)
-
-# Initialize and save out the test dataset
-test_set = PeakDataset(test_paths)
-torch.save(test_set, 'test_data.pth')
-
 #%% DATA LOADING
-train_set = torch.load('larger_data/train_data.pth')
-val_set = torch.load('larger_data/val_data.pth')
-test_set = torch.load('larger_data/test_data.pth')
+train_set = PeakDataset('../../Data/small_data/train_moves.pt', '../../Data/small_data/train/train_%d.pt')
+val_set = PeakDataset('../../Data/small_data/val_moves.pt', '../../Data/small_data/val/val_%d.pt')
+test_set = PeakDataset('../../Data/small_data/test_moves.pt', '../../Data/small_data/test/test_%d.pt')
 
 #%% TRAINING A NEW MODEL
 
 # Initialize the network and train it
 net = BasicLinear()
 train_loss, val_loss = train(net, batch_size=32, n_epochs=15, learning_rate=0.1, train_set=train_set, val_set=val_set,
-                             L2 = 0, model_name='BasicLinear_200_data.pth')
+                             L2 = 0, model_name='BasicLinear_200_data.pt')
 
 #%% LEARNING CURVES
 
