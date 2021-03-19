@@ -7,16 +7,26 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 import time
+import tqdm
 
 #%% Function to train the network
-def train(net, batch_size, n_epochs, learning_rate, train_set, val_set, L2, model_name):
+def train(net, batch_size, n_epochs, learning_rate, train_set, val_set, L2, model_name, model_version):
+
+    # Find the device type (GPU if available)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # Print all of the hyperparameters of the training iteration
     print("===== HYPERPARAMETERS =====")
+    print("model_name = ", model_name)
+    print("device_type =", device)
     print("batch_size =", batch_size)
     print("epochs =", n_epochs)
     print("learning_rate =", learning_rate)
+    print("weight_decay =", L2)
     print("=" * 27)
+
+    # Move the network to the GPU if you can
+    net.to(device)
 
     # Initialize training and validation sets
     train_loader = DataLoader(train_set, batch_size = batch_size, shuffle=True, num_workers=2)
@@ -46,10 +56,13 @@ def train(net, batch_size, n_epochs, learning_rate, train_set, val_set, L2, mode
         start_time = time.time()
 
         # Loop through the data loader
-        for data in train_loader:
+        for data in tqdm.tqdm(train_loader):
 
             # Get inputs and labels
             inputs, labels = data
+
+            # Move the data to the GPU if you can
+            inputs, labels = inputs.to(device), labels.to(device)
 
             # Set parameter gradients to 0
             optimizer.zero_grad()
@@ -66,6 +79,9 @@ def train(net, batch_size, n_epochs, learning_rate, train_set, val_set, L2, mode
         # At the end of each epoch, do a forward pass on the validation set
         total_val_loss = 0
         for inputs, labels in val_loader:
+
+            # Move the data to the GPU if you can
+            inputs, labels = inputs.to(device), labels.to(device)
 
             # Forward pass
             val_outputs = net(inputs)
@@ -84,20 +100,18 @@ def train(net, batch_size, n_epochs, learning_rate, train_set, val_set, L2, mode
         val_loss.append(total_val_loss/len(val_loader))
         print('-' * 20)
 
+        # Save out the model and optimizer
+        torch.save({
+            'model_state_dict': net.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+        }, '../networks/'+str(model_version)+'/model_'+str(epoch))
+
+        # Save out the losses
+        torch.save({
+            'running_loss': running_loss,
+            'train_loss': train_loss,
+            'val_loss': val_loss
+        }, '../networks/'+str(model_version)+'/losses_'+str(epoch))
+
     print("Training finished, took {:.2f}s".format(time.time() - training_start_time))
-
-    # Save the trained model
-    torch.save(net.state_dict(), model_name)
-
-    # Save the entire model, not just the state dict if desired
-    torch.save({
-        'epoch': n_epochs,
-        'model_state_dict': net.state_dict(),
-        'optimizer_state_dict': optimizer.state_dict(),
-        'running_loss': running_loss,
-        'train_loss': train_loss,
-        'val_loss': val_loss
-    }, 'full'+model_name)
-
-    return train_loss, val_loss
 

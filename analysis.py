@@ -4,7 +4,6 @@ Main file to train and test networks and then analyze them
 
 #%%
 # TODO: automate early stopping
-# TODO: look at TQDM for progress
 
 #%%
 import json
@@ -212,3 +211,4 @@ tensor1 = layer1.weight.data.numpy()
 tensor4 = layer4.weight.data.numpy()
 plot_kernels(tensor1)
 plot_kernels(tensor4)
+
