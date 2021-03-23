@@ -16,6 +16,8 @@
 
 overlay_ext3=/nn_peakdata/train
 
+module load anaconda3/2020.07
+
 singularity \
     exec --nv $(for sqf in /scratch/ik1125/nn_peakdata/*.sqf; do echo --overlay $sqf:ro; done) \
     --overlay /scratch/ik1125/overlay-50G-10M.ext3 \
