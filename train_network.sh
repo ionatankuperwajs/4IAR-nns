@@ -16,11 +16,10 @@
 
 overlay_ext3=/nn_peakdata/train
 
-module load anaconda3/2020.07
-
 singularity \
     exec --nv $(for sqf in /scratch/ik1125/nn_peakdata/*.sqf; do echo --overlay $sqf:ro; done) \
     --overlay /scratch/ik1125/overlay-50G-10M.ext3 \
-    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
-    /bin/bash -c "conda activate /ext3/4IAR-conda; \
+    /scratch/work/public/singularity/cuda11.1.1-cudnn8-devel-ubuntu20.04.sif \
+    /bin/bash -c "source /home/ik1125/.bashrc;
+		 conda activate /ext3/4IAR-conda; \
                   python load_train.py -m 'linear' -v 1 -hl 1 -u 200 -b 12 -e 10 -lr .001 -d $overlay_ext3"
