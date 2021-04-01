@@ -95,7 +95,7 @@ if __name__ == '__main__':
    parser.add_argument('-lr', '--learning_rate',
                        help="learning rate",
                        type=float, default=10**-3)
-   parser.add_argument('-d', '--moves_path',
+   parser.add_argument('-mp', '--moves_path',
                        help="path for the move index data",
                        default='..')
    parser.add_argument('-d', '--data_path',
