@@ -10,11 +10,12 @@ import os
 
 #%% RUN FROM THE COMMAND LINE
 
-def main(model_name, model_version, num_layers, num_units, num_filters, filter_size, stride, padding, batch_size, n_epochs, learning_rate, data_path):
+def main(model_name, model_version, num_layers, num_units, num_filters, filter_size, stride, padding, batch_size, n_epochs, learning_rate,
+         moves_path, data_path):
 
     # Grab the training and validation data as a DataLoader
-    train_set = PeakDataset(data_path+'/train_moves.pt', data_path+'/train/train_%d.pt')
-    val_set = PeakDataset(data_path+'/val_moves.pt', data_path+'/val/val_%d.pt')
+    train_set = PeakDataset(moves_path+'/train_moves.pt', data_path+'/train/%s/train_%d.pt', 1)
+    val_set = PeakDataset(moves_path+'/val_moves.pt', data_path+'/val/val_%d.pt', 0)
 
     # Check if a folder exists for this network version number, if not create it
     folder_path = '../networks/' + str(model_version)
@@ -94,11 +95,15 @@ if __name__ == '__main__':
    parser.add_argument('-lr', '--learning_rate',
                        help="learning rate",
                        type=float, default=10**-3)
+   parser.add_argument('-d', '--moves_path',
+                       help="path for the move index data",
+                       default='..')
    parser.add_argument('-d', '--data_path',
                        help="path for the training and validation data",
-                       default='../../Data/small_data')
+                       default='/nn_peakdata')
    args = parser.parse_args()
 
 main(model_name=args.model_name, model_version=args.model_version, num_layers=args.num_layers, num_units=args.num_units,
      num_filters=args.num_filters, filter_size=args.filter_size, stride=args.stride, padding=args.padding,
-     batch_size=args.batch_size, n_epochs=args.n_epochs, learning_rate=args.learning_rate, data_path=args.data_path)
+     batch_size=args.batch_size, n_epochs=args.n_epochs, learning_rate=args.learning_rate, train_path=args.moves_path,
+     val_path=args.data_path)

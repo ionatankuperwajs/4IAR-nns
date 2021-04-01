@@ -57,11 +57,11 @@ num_moves = []
 game_count = 1
 
 # Paths for saving out preprocessed data
-moves_path = '../../Data/val_moves.pt'
-games_path = '../../Data/val/val_%d.pt'
+moves_path = '../../Data/train_moves.pt'
+games_path = '../../Data/train/train_%d.pt'
 
 # Loop through all the games (note: change references in loop to generate data for train, val, test)
-for game_path in val_paths:
+for game_path in train_paths:
 
     # Initialize lists to hold the board state tensors and next move labels
     tensors = []
@@ -91,7 +91,7 @@ for game_path in val_paths:
     tensors_stacked = torch.stack(tensors)
     labels_stacked = np.asarray(labels)
 
-    torch.save([tensors_stacked, labels_stacked], games_path % game_count)
+    # torch.save([tensors_stacked, labels_stacked], games_path % game_count)
     game_count += 1
 
 # Save out the numpy array with total number of moves per game at the end
