@@ -5,7 +5,7 @@
 import torch
 import numpy as np
 from torch.utils.data import Dataset
-import bisect
+From bisect import bisect
 
 #%% CUSTOM DATASET
 
