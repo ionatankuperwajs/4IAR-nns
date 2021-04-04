@@ -16,6 +16,7 @@ def train(net, batch_size, n_epochs, learning_rate, train_set, val_set, L2, mode
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # Print all of the hyperparameters of the training iteration
+    print("\n")
     print("===== HYPERPARAMETERS =====")
     print("model_name = ", model_name)
     print("device_type =", device)
@@ -29,8 +30,8 @@ def train(net, batch_size, n_epochs, learning_rate, train_set, val_set, L2, mode
     net.to(device)
 
     # Initialize training and validation sets
-    train_loader = DataLoader(train_set, batch_size = batch_size, shuffle=True, num_workers=2)
-    val_loader = DataLoader(val_set, batch_size=256, shuffle=True, num_workers=2)
+    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=12)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True, num_workers=12)
 
     # Cross-entropy loss combines log softmax and NLL
     loss = nn.CrossEntropyLoss()
