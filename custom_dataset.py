@@ -5,6 +5,7 @@
 import torch
 import numpy as np
 from torch.utils.data import Dataset
+from bisect import bisect
 
 #%% CUSTOM DATASET
 
@@ -17,6 +18,8 @@ class PeakDataset(Dataset):
         # Find the starting move number for each game
         moves = torch.load(self.moves_path)
         self.gamestart_index = np.cumsum(moves)
+        # Boolean for train or val data
+        self.train = train
 
     # Returns the number of moves in the path
     def __len__(self):
@@ -26,7 +29,7 @@ class PeakDataset(Dataset):
     def __getitem__(self, index):
 
         # Find the game of the move at index and load the game
-        game_index = np.argmax(self.gamestart_index > index)
+        game_index = bisect(self.gamestart_index, index)
         if self.train == 1:
             train_folder = f'{int(np.floor(game_index/10000)):03}'
             game = torch.load(self.folder_path % (train_folder, game_index+1))

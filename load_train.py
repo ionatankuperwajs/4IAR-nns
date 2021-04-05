@@ -105,5 +105,5 @@ if __name__ == '__main__':
 
 main(model_name=args.model_name, model_version=args.model_version, num_layers=args.num_layers, num_units=args.num_units,
      num_filters=args.num_filters, filter_size=args.filter_size, stride=args.stride, padding=args.padding,
-     batch_size=args.batch_size, n_epochs=args.n_epochs, learning_rate=args.learning_rate, train_path=args.moves_path,
-     val_path=args.data_path)
+     batch_size=args.batch_size, n_epochs=args.n_epochs, learning_rate=args.learning_rate, moves_path=args.moves_path,
+     data_path=args.data_path)

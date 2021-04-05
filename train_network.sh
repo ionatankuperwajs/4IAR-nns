@@ -3,10 +3,10 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=ik1125@nyu.edu
 #SBATCH --output=4IAR_nn.out
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=12
 #SBATCH --gres=gpu:1
-#SBATCH --time=12:00:00
-#SBATCH --mem=8GB
+#SBATCH --time=48:00:00
+#SBATCH --mem=40GB
 
 # For linear networks
 # python load_train.py -m 'linear' -v 1 -hl 1 -u 200 -b 12 -e 10 -lr .001 -d #overlay_ext3
