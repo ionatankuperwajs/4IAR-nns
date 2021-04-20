@@ -13,7 +13,8 @@ import tqdm
 def train(net, batch_size, n_epochs, learning_rate, train_set, val_set, L2, model_name, model_version):
 
     # Find the device type (GPU if available)
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cpu')
 
     # Print all of the hyperparameters of the training iteration
     print("\n")
@@ -30,8 +31,8 @@ def train(net, batch_size, n_epochs, learning_rate, train_set, val_set, L2, mode
     net.to(device)
 
     # Initialize training and validation sets
-    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=12)
-    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True, num_workers=12)
+    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=40)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True, num_workers=40)
 
     # Cross-entropy loss combines log softmax and NLL
     loss = nn.CrossEntropyLoss()
