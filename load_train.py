@@ -3,15 +3,15 @@ Main file to train networks
 """
 
 from custom_dataset import PeakDataset
-from network import Linear, CNN
+from network import Linear, LinearSkip, CNN
 from training import train
 import torch
 import os
 
 #%% RUN FROM THE COMMAND LINE
 
-def main(model_name, model_version, num_layers, num_units, num_filters, filter_size, stride, padding, batch_size, n_epochs, learning_rate,
-         moves_path, data_path):
+def main(model_name, model_version, num_layers, num_units, bottleneck, num_filters, filter_size, stride, padding, batch_size,
+         n_epochs, learning_rate, moves_path, data_path):
 
     # Grab the training and validation data as a DataLoader
     train_set = PeakDataset(moves_path+'/train_moves.pt', data_path+'/train/%s/train_%d.pt', 1)
@@ -36,6 +36,20 @@ def main(model_name, model_version, num_layers, num_units, num_filters, filter_s
             'batch': batch_size,
             'epoch': n_epochs,
             'lr': learning_rate,
+        }, '../networks/' + str(model_version) + '/hparams')
+
+    elif model_name == 'linearskip':
+        net = LinearSkip(num_layers=num_layers, num_units=num_units, bottleneck=bottleneck)
+        # Save out the hyperparameters
+        torch.save({
+            'model': model_name,
+            'version': model_version,
+            'layers': num_layers,
+            'units': num_units,
+            'batch': batch_size,
+            'epoch': n_epochs,
+            'lr': learning_rate,
+            'bottleneck': bottleneck,
         }, '../networks/' + str(model_version) + '/hparams')
 
     elif model_name == 'conv':
@@ -63,7 +77,7 @@ if __name__ == '__main__':
    parser = argparse.ArgumentParser()
    parser.add_argument('-m', '--model_name',
                        help="model type to be trained",
-                       choices=['linear', 'conv'],
+                       choices=['linear', 'linearskip', 'conv'],
                        default='linear')
    parser.add_argument('-v', '--model_version',
                        help="model version number for saving",
@@ -74,6 +88,9 @@ if __name__ == '__main__':
    parser.add_argument('-u', '--num_units',
                        help="number of hidden units for fc network",
                        type=int,default=200)
+   parser.add_argument('-bn', '--bottleneck',
+                       help="bottleneck for the skip connections",
+                       type=int, default=50)
    parser.add_argument('-f', '--num_filters',
                        help="number of filters for conv network",
                        type=int,default=4)
@@ -104,6 +121,6 @@ if __name__ == '__main__':
    args = parser.parse_args()
 
 main(model_name=args.model_name, model_version=args.model_version, num_layers=args.num_layers, num_units=args.num_units,
-     num_filters=args.num_filters, filter_size=args.filter_size, stride=args.stride, padding=args.padding,
+     bottleneck=args.bottleneck, num_filters=args.num_filters, filter_size=args.filter_size, stride=args.stride, padding=args.padding,
      batch_size=args.batch_size, n_epochs=args.n_epochs, learning_rate=args.learning_rate, moves_path=args.moves_path,
      data_path=args.data_path)

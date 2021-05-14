@@ -1,5 +1,5 @@
 """
-Test a network's performance in terms of accuracy and NLL, generate plots
+Test a network's performance in terms of accuracy and NLL
 """
 
 import torch
@@ -7,6 +7,31 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 import numpy as np
 from custom_dataset import PeakDataset
+
+#%% Function to test the network
+def test(net, test_set):
+
+    # Initialize the test set
+    test_loader = DataLoader(test_set, batch_size=128, shuffle=False)
+
+    # Set loss function
+    loss = nn.CrossEntropyLoss(reduction='none')
+
+    test_output = np.zeros((len(test_set),3))
+    count = 0
+    for data, target in test_loader:
+        # Run the data through the network
+        output = net(data)
+        loss_size = loss(output, target)
+
+        # Save out the loss size, prediction, and target
+        test_output[count*38:(count+1)*38, 0] = loss_size.detach()
+        test_output[count*38:(count+1)*38, 1] = torch.max(output, dim=1)[1]
+        test_output[count*38:(count+1)*38, 2] = target
+        count += 1
+
+    return test_output
+
 
 #%% Function to run a model on the test set, returns the percent correct and nll
 def test_performance(net, test_set):

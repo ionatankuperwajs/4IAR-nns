@@ -42,6 +42,48 @@ class Linear(nn.Module):
         return x
 
 #%%
+# Fully connected network with skip connections and default architecture: no hidden layers, 200 units each
+class LinearSkip(nn.Module):
+    def __init__(self, num_layers=1, num_units=200, bottleneck=50):
+        super(LinearSkip, self).__init__()
+        self.num_layers = num_layers
+
+        # Input linear layer
+        self.in_layer = nn.Linear(2*4*9, num_units)
+
+        # Many hidden layers
+        self.layerin = nn.ModuleList()
+        self.layerout = nn.ModuleList()
+        for h_layer in range(num_layers-1):
+            self.layerin.append(nn.Linear(num_units, bottleneck))
+            self.layerout.append(nn.Linear(bottleneck, num_units))
+
+        # Output linear layer
+        self.out_layer = nn.Linear(num_units, 36)
+
+    def forward(self, x):
+        input = x
+        # Squeeze to 1-dimension, pass to fully connected input layer
+        x = x.view(-1, num_flat_features(x))
+        x = F.relu(self.in_layer(x))
+
+        # Forward passes through hidden layers if they exist with skip connections
+        if not self.layerin:
+            pass
+        else:
+            for i_layer in range(self.num_layers):
+                identity = x
+                x = F.relu(self.layerin[i_layer](x))
+                x = self.layerout[i_layer](x)
+                x += identity
+
+        # Pass to fully-connected output layer
+        x = self.out_layer(x)
+        # Enforce move legality by setting the output logits to be very negative where there are pieces
+        x += input.sum(dim=1).view(-1, 36)*-1000
+        return x
+
+#%%
 # Conv NN class definition with default architecture: 1 layer, 4 filters, 3x3 kernel, same padding (to preserve spatial dimension)
 class CNN(nn.Module):
     def __init__(self, num_layers=1, num_filters=4, filter_size=3,  stride=1, pad=1):

@@ -27,6 +27,9 @@ def train(net, batch_size, n_epochs, learning_rate, train_set, val_set, L2, mode
     print("weight_decay =", L2)
     print("=" * 27)
 
+    # Open a file to save out the losses
+    loss_file = open('../networks/'+str(model_version)+'/loss_file.txt', "w")
+
     # Move the network to the GPU if you can
     net.to(device)
 
@@ -77,6 +80,9 @@ def train(net, batch_size, n_epochs, learning_rate, train_set, val_set, L2, mode
 
             # Update the training loss for the epoch
             running_loss += loss_size.item()
+
+            # Save out the loss to the text file
+            loss_file.write('%f \n' % loss_size.item())
 
         # At the end of each epoch, do a forward pass on the validation set
         total_val_loss = 0
