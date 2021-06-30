@@ -13,7 +13,8 @@ import tqdm
 def train(net, batch_size, n_epochs, learning_rate, train_set, val_set, L2, model_name, model_version):
 
     # Find the device type (GPU if available)
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cpu')
 
     # Print all of the hyperparameters of the training iteration
     print("\n")
@@ -26,12 +27,15 @@ def train(net, batch_size, n_epochs, learning_rate, train_set, val_set, L2, mode
     print("weight_decay =", L2)
     print("=" * 27)
 
+    # Open a file to save out the losses
+    loss_file = open('../networks/'+str(model_version)+'/loss_file.txt', "w")
+
     # Move the network to the GPU if you can
     net.to(device)
 
     # Initialize training and validation sets
-    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=12)
-    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True, num_workers=12)
+    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=40)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True, num_workers=40)
 
     # Cross-entropy loss combines log softmax and NLL
     loss = nn.CrossEntropyLoss()
@@ -76,6 +80,9 @@ def train(net, batch_size, n_epochs, learning_rate, train_set, val_set, L2, mode
 
             # Update the training loss for the epoch
             running_loss += loss_size.item()
+
+            # Save out the loss to the text file
+            loss_file.write('%f \n' % loss_size.item())
 
         # At the end of each epoch, do a forward pass on the validation set
         total_val_loss = 0
