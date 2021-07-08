@@ -18,15 +18,15 @@ from network import Linear, CNN
 #%% LEARNING CURVES
 
 # Load and plot the learning curves
-losses = torch.load('../networks/5/losses_9')
+losses = torch.load('../networks/3/losses_9')
 train_loss = losses['train_loss']
 val_loss = losses['val_loss']
 
 # Plot the learning curves for train and validation
 def plot_learning(train_loss, val_loss, lb=1.9, ub=3.0):
         fig, ax = plt.subplots(figsize=(6,4))
-        ax.plot(np.arange(1,11), train_loss, lw=2, color='darkblue', marker='o')
-        ax.plot(np.arange(1,11), val_loss, lw=2, color='cornflowerblue', marker='o')
+        ax.plot(np.arange(1,len(train_loss)+1), train_loss, lw=2, color='darkblue', marker='o')
+        ax.plot(np.arange(1,len(train_loss)+1), val_loss, lw=2, color='cornflowerblue', marker='o')
         ax.set_xlabel('Epoch')
         ax.set_ylabel('Negative log-likelihood')
         ax.set_ylim(lb, ub)
