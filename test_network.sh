@@ -14,4 +14,4 @@ singularity \
     /scratch/work/public/singularity/cuda11.1.1-cudnn8-devel-ubuntu20.04.sif \
     /bin/bash -c "source /home/ik1125/.bashrc;
 		 conda activate /ext3/4IAR-conda; \
-                  python load_test.py -m 'linearskip' -v 1 -b 128 "
+                  python load_test.py -m 'linearskip' -v 1"

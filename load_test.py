@@ -9,7 +9,7 @@ import torch
 
 #%% RUN FROM THE COMMAND LINE
 
-def main(model_name, model_version, batch_size, moves_path, data_path):
+def main(model_name, model_version, moves_path, data_path):
 
     # Grab the testing data as a DataLoader
     test_set = PeakDataset(moves_path+'/test_moves.pt', data_path+'/test/%s/test_%d.pt')
@@ -31,7 +31,7 @@ def main(model_name, model_version, batch_size, moves_path, data_path):
         net.load_state_dict(model['model_state_dict'])
 
     # Test the network
-    test_performance(net, test_set, batch_size, model_version)
+    test_performance(net, test_set, model_version)
 
 if __name__ == '__main__':
    import argparse
@@ -43,9 +43,6 @@ if __name__ == '__main__':
    parser.add_argument('-v', '--model_version',
                        help="model version number for saving",
                        type=int, default=1)
-   parser.add_argument('-b', '--batch_size',
-                       help="size of a batch",
-                       type=int, default=12)
    parser.add_argument('-mp', '--moves_path',
                        help="path for the move index data",
                        default='..')
@@ -53,5 +50,5 @@ if __name__ == '__main__':
                        help="path for the training and validation data",
                        default='/nn_peakdata')
    args = parser.parse_args()
-   main(model_name=args.model_name, model_version=args.model_version, batch_size=args.batch_size,
+   main(model_name=args.model_name, model_version=args.model_version,
         moves_path=args.moves_path, data_path=args.data_path)
