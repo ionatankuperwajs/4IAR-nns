@@ -9,10 +9,10 @@ import numpy as np
 from custom_dataset import PeakDataset
 
 #%% Function to test the network
-def test(net, test_set):
+def test(net, test_set, batch_size):
 
     # Initialize the test set
-    test_loader = DataLoader(test_set, batch_size=128, shuffle=False)
+    test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=False, num_workers=40)
 
     # Set loss function
     loss = nn.CrossEntropyLoss(reduction='none')
@@ -34,9 +34,13 @@ def test(net, test_set):
 
 
 #%% Function to run a model on the test set, returns the percent correct and nll
-def test_performance(net, test_set):
+def test_performance(net, test_set, batch_size, model_version):
+
+    # Open a file to save out the test boards with model predictions and human moves
+    results_file = open('../networks/' + str(model_version) + '/results_file.txt', "w")
+
     # Initialize the test set
-    test_loader = DataLoader(test_set, batch_size=1, shuffle=True)
+    test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=False, num_workers=40)
 
     # Set loss function
     loss = nn.CrossEntropyLoss()
@@ -51,9 +55,15 @@ def test_performance(net, test_set):
         # Compare prediction to ground truth (get the index of the max log-probability)
         pred = torch.max(output, dim=1)[1]
         correct += torch.eq(pred,target)
+        np.savetxt(results_file, data, delimiter=',', newline=',')
+        results_file.write('%f,%f \n' % (pred,target))
     perc_correct = 100. * correct / len(test_loader)
     nll = running_loss / len(test_loader)
-    return perc_correct, nll
+
+    # Save out the accuracy and nll to a text file
+    with open('../networks/' + str(model_version) + '/final_stats.txt', "w") as f:
+        f.write('%f \n %f' % (perc_correct,nll))
+        
 
 #%% Function to run a model on the test set per user, returns the percent correct and nll for each as a vector
 

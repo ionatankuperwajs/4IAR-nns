@@ -13,12 +13,34 @@ import torch
 import torch.optim as optim
 from custom_dataset import PeakDataset
 from testing import test
-from network import Linear, CNN
+from network import Linear, LinearSkip
+
+#%% NETWORK COMPARISON
+
+layers = [5, 10, 20, 40]
+val_loss200 = [2.095, 2.063, 2.045, 2.030]
+val_loss500 = [2.062, 2.042, 2.027, 2.014]
+val_loss1000 = [2.046, 2.027, 2.014, 2.002]
+val_loss2000 = [2.031, 2.014, 2.000, 1.992]
+
+# 'mistyrose','darksalmon','red','firebrick','maroon'
+fig, ax = plt.subplots(figsize=(6,4))
+ax.plot(layers, val_loss200, lw=2, color='maroon', marker='o')
+ax.plot(layers, val_loss500, lw=2, color='firebrick', marker='o')
+ax.plot(layers, val_loss1000, lw=2, color='red', marker='o')
+ax.plot(layers, val_loss2000, lw=2, color='darksalmon', marker='o')
+ax.set_xlabel('Number of hidden layers')
+ax.set_ylabel('Negative log-likelihood')
+ax.legend(['200 units', '500 units', '1000 units', '2000 units'])
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+plt.show()
+# plt.savefig('val_comparison.png', format='png', dpi=1000, bbox_inches='tight')
 
 #%% LEARNING CURVES
 
 # Load and plot the learning curves
-losses = torch.load('../networks/3/losses_9')
+losses = torch.load('../networks/16/losses_9')
 train_loss = losses['train_loss']
 val_loss = losses['val_loss']
 
@@ -36,20 +58,20 @@ def plot_learning(train_loss, val_loss, lb=1.9, ub=3.0):
         ax.legend(['train', 'validation'])
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
-        plt.show()
-        # plt.savefig('learning.png', format='png', dpi=1000, bbox_inches='tight')
+        # plt.show()
+        plt.savefig('learning_16.png', format='png', dpi=1000, bbox_inches='tight')
 
 plot_learning(train_loss, val_loss)
 
 #%% MAIN TESTING
 
 # Grab the test data as a DataLoader
-test_set = PeakDataset('../../Data/small_data/test_moves.pt', '../../Data/small_data/test/test_%d.pt', 0)
+test_set = PeakDataset('../../Data/small_data/test_moves.pt', '../../Data/small_data/test/test_%d.pt')
 
 # Load the saved network
 hparams = torch.load('../networks/1/hparams')
 model = torch.load('../networks/1/model_9')
-net = Linear(num_layers=hparams['layers'], num_units=hparams['units'])
+net = LinearSkip(num_layers=hparams['layers'], num_units=hparams['units'])
 net.load_state_dict(model['model_state_dict'])
 
 # Test the network
