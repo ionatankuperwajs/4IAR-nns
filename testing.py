@@ -129,28 +129,3 @@ def test_performance_minimal(net, test_set, batch_size, model_version):
 #
 #     return perc_correct_all, nll_all
 
-#%% Function to run a model on the test set and return the accuracy by move number in the game
-# def test_by_move(net, test_set):
-#
-#     # Initialize a numpy array for each move (number correct, total number)
-#     moves = np.zeros(36)
-#     totals = np.zeros(36)
-#
-#     # Initialize the test set
-#     test_loader = DataLoader(test_set, batch_size=1, shuffle=True)
-#
-#     for data, target in test_loader:
-#
-#         # Run the data through the network
-#         output = net(data)
-#
-#         # For the current move number, get the prediction and compare with ground truth
-#         move_num = int(data.sum().item())
-#         pred = torch.max(output, dim=1)[1]
-#         moves[move_num] += torch.eq(pred, target)
-#         totals[move_num] += 1
-#
-#     # Divide to compute the accuracy, remove the nans and  return
-#     move_accuracy = moves/totals
-#     return move_accuracy[~np.isnan(move_accuracy)]
-

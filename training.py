@@ -97,7 +97,7 @@ def train(net, batch_size, n_epochs, learning_rate, train_set, val_set, L2, mode
             total_val_loss += val_loss_size.item()
 
         # Update the scheduler
-        scheduler.step(total_val_loss/len(val_loader))
+        scheduler.step()
 
         # Print and save training and validation loss for the epoch
         print("Epoch {}\nTraining Loss = {:.2f}, Validation Loss = {:.2f}, took {:.2f}s".format(
