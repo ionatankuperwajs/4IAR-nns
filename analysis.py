@@ -39,7 +39,7 @@ plt.show()
 #%% LEARNING CURVES
 
 # Load and plot the learning curves
-losses = torch.load('../networks/16/losses_9')
+losses = torch.load('../networks/17/losses_9')
 train_loss = losses['train_loss']
 val_loss = losses['val_loss']
 
