@@ -21,6 +21,8 @@ def main(model_name, model_version, num_layers, num_units, bottleneck, num_filte
     folder_path = '../networks/' + str(model_version)
     if not os.path.isdir(folder_path):
         os.makedirs(folder_path)
+    elif continue_train:
+        pass
     else:
         raise Exception("Model version already exists")
 
