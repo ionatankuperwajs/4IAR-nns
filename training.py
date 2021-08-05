@@ -23,6 +23,7 @@ def train(net, batch_size, n_epochs, start_epoch, learning_rate, train_set, val_
     print("device_type =", device)
     print("batch_size =", batch_size)
     print("epochs =", n_epochs)
+    print("start_epoch =", start_epoch+1)
     print("learning_rate =", learning_rate)
     print("weight_decay =", L2)
     print("=" * 27)
