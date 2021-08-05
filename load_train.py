@@ -81,7 +81,7 @@ def main(model_name, model_version, num_layers, num_units, bottleneck, num_filte
                     last_epoch = curr_epoch
         if last_epoch >= 0:
             checkpoint = folder_path + '/model_%d' % last_epoch
-            net.load_state_dict(torch.load(checkpoint))
+            net.load_state_dict(torch.load(checkpoint)['model_state_dict'])
 
     # Train the network
     train(net, batch_size=batch_size, n_epochs=n_epochs, start_epoch=last_epoch, learning_rate=learning_rate,
