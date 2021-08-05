@@ -11,7 +11,7 @@ import os
 #%% RUN FROM THE COMMAND LINE
 
 def main(model_name, model_version, num_layers, num_units, bottleneck, num_filters, filter_size, stride, padding, batch_size,
-         n_epochs, learning_rate, moves_path, data_path):
+         n_epochs, learning_rate, moves_path, data_path, continue_train=False):
 
     # Grab the training and validation data as a DataLoader
     train_set = PeakDataset(moves_path+'/train_moves.pt', data_path+'/train/%s/train_%d.pt')
@@ -68,8 +68,21 @@ def main(model_name, model_version, num_layers, num_units, bottleneck, num_filte
             'lr': learning_rate,
         }, '../networks/' + str(model_version) + '/hparams')
 
+    # Continue training for a network
+    last_epoch = -1
+    if continue_train:
+        files = os.listdir(folder_path)
+        for file in files:
+            if file[0:5] == 'model':
+                curr_epoch = int(file.split('_')[1])
+                if curr_epoch > last_epoch:
+                    last_epoch = curr_epoch
+        if last_epoch >= 0:
+            checkpoint = folder_path + '/model_%d' % last_epoch
+            net.load_state_dict(torch.load(checkpoint))
+
     # Train the network
-    train(net, batch_size=batch_size, n_epochs=n_epochs, learning_rate=learning_rate,
+    train(net, batch_size=batch_size, n_epochs=n_epochs, start_epoch=last_epoch, learning_rate=learning_rate,
                                  train_set=train_set, val_set=val_set, L2=0, model_name=model_name, model_version=model_version)
 
 if __name__ == '__main__':

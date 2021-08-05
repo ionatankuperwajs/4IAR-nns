@@ -10,7 +10,7 @@ import time
 import tqdm
 
 #%% Function to train the network
-def train(net, batch_size, n_epochs, learning_rate, train_set, val_set, L2, model_name, model_version):
+def train(net, batch_size, n_epochs, start_epoch, learning_rate, train_set, val_set, L2, model_name, model_version):
 
     # Find the device type (GPU if available)
     # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -43,8 +43,9 @@ def train(net, batch_size, n_epochs, learning_rate, train_set, val_set, L2, mode
     # Stochastic gradient descent with L2 regularization
     optimizer = optim.SGD(net.parameters(), lr=learning_rate, weight_decay=L2)
 
-    # Set up a scheduler to decrease the learning rate if validation loss plateaus
+    # Set up a scheduler to decrease the learning rate every few epochs
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.2)
+    scheduler.step(epoch=start_epoch+1)
 
     # Training start time
     training_start_time = time.time()
@@ -54,7 +55,7 @@ def train(net, batch_size, n_epochs, learning_rate, train_set, val_set, L2, mode
     val_loss = []
 
     # Loop for n_epochs
-    for epoch in range(n_epochs):
+    for epoch in range(start_epoch+1, n_epochs):
 
         # Set running loss and start time for training epoch
         running_loss = 0.0
