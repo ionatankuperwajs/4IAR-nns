@@ -34,13 +34,13 @@ import numpy as np
 
 #%% Function to run a model on the test set, returns the percent correct and nll and save out every board position,
 #   prediction, and target for the test data set
-def test_performance(net, test_set, batch_size, model_version):
+def test_performance(net, test_set, model_version):
 
     # Open a file to save out the test boards with model predictions and human moves
     results_file = open('../networks/' + str(model_version) + '/results_file.txt', "w")
 
     # Initialize the test set
-    test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=False, num_workers=40)
+    test_loader = DataLoader(test_set, batch_size=1, shuffle=False, num_workers=40)
 
     # Set loss function
     loss = nn.CrossEntropyLoss()
@@ -65,10 +65,10 @@ def test_performance(net, test_set, batch_size, model_version):
         f.write('%f \n %f' % (perc_correct,nll))
 
 #%% Same function as above, but returns only the percent correct and nll
-def test_performance_minimal(net, test_set, batch_size, model_version):
+def test_performance_minimal(net, test_set, model_version):
 
     # Initialize the test set
-    test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=False, num_workers=40)
+    test_loader = DataLoader(test_set, batch_size=1, shuffle=False, num_workers=40)
 
     # Set loss function
     loss = nn.CrossEntropyLoss()
