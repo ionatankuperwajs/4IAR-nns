@@ -11,7 +11,7 @@ import os
 #%% RUN FROM THE COMMAND LINE
 
 def main(model_name, model_version, num_layers, num_units, bottleneck, num_filters, filter_size, stride, padding, batch_size,
-         n_epochs, learning_rate, moves_path, data_path, continue_train=False):
+         n_epochs, learning_rate, moves_path, data_path, continue_train):
 
     # Grab the training and validation data as a DataLoader
     train_set = PeakDataset(moves_path+'/train_moves.pt', data_path+'/train/%s/train_%d.pt')
@@ -131,9 +131,12 @@ if __name__ == '__main__':
    parser.add_argument('-d', '--data_path',
                        help="path for the training and validation data",
                        default='/nn_peakdata')
+   parser.add_argument('-c', '--continue_train',
+                       help="flag to continue training",
+                       action='store_true')
    args = parser.parse_args()
 
 main(model_name=args.model_name, model_version=args.model_version, num_layers=args.num_layers, num_units=args.num_units,
      bottleneck=args.bottleneck, num_filters=args.num_filters, filter_size=args.filter_size, stride=args.stride, padding=args.padding,
      batch_size=args.batch_size, n_epochs=args.n_epochs, learning_rate=args.learning_rate, moves_path=args.moves_path,
-     data_path=args.data_path)
+     data_path=args.data_path, continue_train=args.continue_train)
