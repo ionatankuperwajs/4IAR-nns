@@ -35,12 +35,10 @@ import numpy as np
 #%% Function to run a model on the test set, returns the percent correct and nll and save out every board position,
 #   prediction, and target for the test data set
 def test_performance(net, test_set, model_version):
+    test_loader = DataLoader(test_set, batch_size=1, shuffle=False, num_workers=40)
 
     # Open a file to save out the test boards with model predictions and human moves
     results_file = open('../networks/' + str(model_version) + '/results_file.txt', "w")
-
-    # Initialize the test set
-    test_loader = DataLoader(test_set, batch_size=1, shuffle=False, num_workers=40)
 
     # Set loss function
     loss = nn.CrossEntropyLoss()
@@ -52,11 +50,21 @@ def test_performance(net, test_set, model_version):
         output = net(data)
         loss_size = loss(output, target)
         running_loss += loss_size.item()
+
         # Compare prediction to ground truth (get the index of the max log-probability)
         pred = torch.max(output, dim=1)[1]
-        correct += torch.eq(pred,target)
+        correct += torch.eq(pred, target)
         np.savetxt(results_file, data, delimiter=',', newline=',')
-        results_file.write('%f,%f \n' % (pred,target))
+        results_file.write('%f,%f \n' % (pred, target))
+
+        # Turn data into a 2D numpy array
+        numpy_data = data[0].detach().numpy()
+        numpy_data = numpy_data[0] - numpy_data[1]
+
+        np.savetxt(results_file, numpy_data, delimiter=',', newline=',', fmt='%d')
+        np.savetxt(results_file, output[0].detach().numpy(), delimiter=',', newline=',')
+        results_file.write('%d,%d \n' % (pred, target))
+
     perc_correct = 100. * correct / len(test_loader)
     nll = running_loss / len(test_loader)
 
