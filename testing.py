@@ -54,8 +54,6 @@ def test_performance(net, test_set, model_version):
         # Compare prediction to ground truth (get the index of the max log-probability)
         pred = torch.max(output, dim=1)[1]
         correct += torch.eq(pred, target)
-        np.savetxt(results_file, data, delimiter=',', newline=',')
-        results_file.write('%f,%f \n' % (pred, target))
 
         # Turn data into a 2D numpy array
         numpy_data = data[0].detach().numpy()
