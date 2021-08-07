@@ -31,7 +31,7 @@ def main(model_name, model_version, moves_path, data_path):
         net.load_state_dict(model['model_state_dict'])
 
     # Test the network
-    test_performance_minimal(net, test_set, model_version)
+    test_performance(net, test_set, model_version)
 
 if __name__ == '__main__':
    import argparse
