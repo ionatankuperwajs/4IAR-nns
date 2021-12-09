@@ -12,13 +12,34 @@ import pandas as pd
 import torch
 import torch.optim as optim
 from custom_dataset import PeakDataset
-from testing import test
-from network import Linear, CNN
+from network import Linear, LinearSkip
+
+#%% NETWORK COMPARISON
+
+layers = [5, 10, 20, 40]
+val_loss200 = [2.095, 2.063, 2.045, 2.030]
+val_loss500 = [2.062, 2.042, 2.027, 2.014]
+val_loss1000 = [2.046, 2.027, 2.014, 2.002]
+val_loss2000 = [2.031, 2.014, 2.000, 1.992]
+
+# 'mistyrose','darksalmon','red','firebrick','maroon'
+fig, ax = plt.subplots(figsize=(6,4))
+ax.plot(layers, val_loss200, lw=2, color='maroon', marker='o')
+ax.plot(layers, val_loss500, lw=2, color='firebrick', marker='o')
+ax.plot(layers, val_loss1000, lw=2, color='red', marker='o')
+ax.plot(layers, val_loss2000, lw=2, color='darksalmon', marker='o')
+ax.set_xlabel('Number of hidden layers')
+ax.set_ylabel('Negative log-likelihood')
+ax.legend(['200 units', '500 units', '1000 units', '2000 units'])
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+plt.show()
+# plt.savefig('val_comparison.png', format='png', dpi=1000, bbox_inches='tight')
 
 #%% LEARNING CURVES
 
 # Load and plot the learning curves
-losses = torch.load('../networks/3/losses_9')
+losses = torch.load('../networks/21/losses_9')
 train_loss = losses['train_loss']
 val_loss = losses['val_loss']
 
@@ -36,25 +57,83 @@ def plot_learning(train_loss, val_loss, lb=1.9, ub=3.0):
         ax.legend(['train', 'validation'])
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
-        plt.show()
-        # plt.savefig('learning.png', format='png', dpi=1000, bbox_inches='tight')
+        # plt.show()
+        plt.savefig('learning_16.png', format='png', dpi=1000, bbox_inches='tight')
 
 plot_learning(train_loss, val_loss)
 
-#%% MAIN TESTING
+#%% ANALYZING TEST RESULTS
 
-# Grab the test data as a DataLoader
-test_set = PeakDataset('../../Data/small_data/test_moves.pt', '../../Data/small_data/test/test_%d.pt', 0)
+# Load in the text file with board positions
+results_path = '../networks/1/results_file.txt'
+results_file = open(results_path, 'r')
+results_lines = results_file.read().splitlines()
 
-# Load the saved network
-hparams = torch.load('../networks/1/hparams')
-model = torch.load('../networks/1/model_9')
-net = Linear(num_layers=hparams['layers'], num_units=hparams['units'])
-net.load_state_dict(model['model_state_dict'])
+# Initialize a numpy array with number of guesses
+guesses = np.zeros(36)
 
-# Test the network
-test_output = test(net, test_set)
+# Initialize a numpy array for each move (number correct, total number)
+moves = np.zeros(36)
+totals = np.zeros(36)
 
+# For each line in the text file
+for line in results_lines:
+        # Break down the line from the text file into its components
+        line_list = [float(s) for s in line.split(',')]
+        board = [int(f) for f in line_list[0:36]]
+        output = line_list[36:72]
+        prediction = int(line_list[72])
+        target = int(line_list[73])
+
+        # Compute number of guesses
+        preds, idxs = torch.topk(torch.tensor(output), 36, sorted=True)
+        # Now iterate through the sorted values until one matches the ground truth
+        for guess in range(len(preds)):
+                if torch.eq(idxs[guess], target):
+                        guesses[guess] += 1
+                        break
+
+        # For the current move number, get the prediction and compare with ground truth
+        move_num = np.sum(np.absolute(board))
+        moves[move_num] += np.equal(prediction, target)
+        totals[move_num] += 1
+
+# Convert to cumulative percent accuracy
+guesses_accuracy = np.zeros(36)
+for i in range(len(guesses)):
+        guesses_accuracy[i] = np.sum(guesses[0:i+1])/np.sum(guesses)
+
+# Divide to compute the accuracy, remove the nans and  return
+move_accuracy = moves/totals
+move_accuracy = move_accuracy[~np.isnan(move_accuracy)]
+
+#%% PLOTS
+
+# Plot accuracy as a function of number of guesses
+fig, ax = plt.subplots(figsize=(6,4))
+ax.plot(np.arange(1,37), guesses_accuracy, lw=2, color='darkblue', marker='o')
+ax.set_xlim(1,37)
+ax.set_ylim(0,1.05)
+ax.set_xlabel('Number of guesses')
+ax.set_ylabel('Accuracy')
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+plt.show()
+# plt.savefig('guesses.png', format='png', dpi=1000, bbox_inches='tight')
+
+# Plot accuracy as a function of move number
+fig, ax = plt.subplots(figsize=(6,4))
+ax.plot(np.arange(1,37,2), move_accuracy, lw=2, color='darkblue')
+ax.set_xlim(1,37)
+ax.set_xlabel('Move number')
+ax.set_ylabel('Accuracy')
+ax.set_ylim(0,1)
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+plt.show()
+# plt.savefig('move.png', format='png', dpi=1000, bbox_inches='tight')
+
+#%% OLDER CODE
 
 # #%% LOADING A TRAINED MODEL
 #
@@ -156,59 +235,3 @@ test_output = test(net, test_set)
 # ax.legend(custom_lines, ['cognitive models', 'lesioned neural networks', 'full neural networks'])
 # plt.show()
 # # plt.savefig('comparison.png', format='png', dpi=1000, bbox_inches='tight')
-#
-# # Plot accuracy as a function of number of guesses for the best network
-# guesses_accuracy = test_with_guesses(net_DL, test_set)
-# fig, ax = plt.subplots(figsize=(6,4))
-# ax.plot(np.arange(1,37), guesses_accuracy, lw=2, color='darkblue', marker='o')
-# ax.set_xlim(1,37)
-# ax.set_ylim(0,1.05)
-# ax.set_xlabel('Number of guesses')
-# ax.set_ylabel('Accuracy')
-# ax.spines['top'].set_visible(False)
-# ax.spines['right'].set_visible(False)
-# plt.show()
-# # plt.savefig('guesses.png', format='png', dpi=1000, bbox_inches='tight')
-#
-# # Plot accuracy as a function of move number for the best network
-# moves_accuracy = test_by_move(net_DL, test_set)
-# fig, ax = plt.subplots(figsize=(6,4))
-# ax.plot(np.arange(1,37,2), moves_accuracy, lw=2, color='darkblue')
-# ax.set_xlim(1,37)
-# ax.set_xlabel('Move number')
-# ax.set_ylabel('Accuracy')
-# ax.set_ylim(0,1)
-# ax.spines['top'].set_visible(False)
-# ax.spines['right'].set_visible(False)
-# plt.show()
-# # plt.savefig('move.png', format='png', dpi=1000, bbox_inches='tight')
-#
-# #%% CONVOLUTIONAL FEATURE MAPS
-#
-# # Function to visualize feature maps
-# def plot_kernels(tensor, num_cols=4):
-#     num_kernels = tensor.shape[0]
-#     num_rows = 1 + num_kernels // num_cols
-#     fig = plt.figure(figsize=(num_cols, num_rows))
-#     for i in range(num_cols):
-#         ax1 = fig.add_subplot(num_rows, num_cols, i+1)
-#         ax2 = fig.add_subplot(num_rows, num_cols, i+num_cols+1)
-#         ax1.imshow(tensor[i][0], cmap='gray')
-#         ax1.axis('off')
-#         ax1.set_xticklabels([])
-#         ax1.set_yticklabels([])
-#         ax2.imshow(tensor[i][1], cmap='gray')
-#         ax2.axis('off')
-#         ax2.set_xticklabels([])
-#         ax2.set_yticklabels([])
-#
-#     plt.show()
-#     # plt.savefig('filters4.png', format='png', dpi=1000, bbox_inches='tight')
-#
-# # Pick the first and last convolutional layers and plot them
-# layer1 = [i for i in net_DCNN.children()][0]
-# layer4 = [i for i in net_DCNN.children()][3]
-# tensor1 = layer1.weight.data.numpy()
-# tensor4 = layer4.weight.data.numpy()
-# plot_kernels(tensor1)
-# plot_kernels(tensor4)
