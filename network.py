@@ -71,7 +71,7 @@ class LinearSkip(nn.Module):
         if not self.layerin:
             pass
         else:
-            for i_layer in range(self.num_layers):
+            for i_layer in range(self.num_layers-1):
                 identity = x
                 x = F.relu(self.layerin[i_layer](x))
                 x = self.layerout[i_layer](x)

@@ -14,8 +14,8 @@ def main(model_name, model_version, num_layers, num_units, bottleneck, num_filte
          n_epochs, learning_rate, moves_path, data_path):
 
     # Grab the training and validation data as a DataLoader
-    train_set = PeakDataset(moves_path+'/train_moves.pt', data_path+'/train/%s/train_%d.pt', 1)
-    val_set = PeakDataset(moves_path+'/val_moves.pt', data_path+'/val/val_%d.pt', 0)
+    train_set = PeakDataset(moves_path+'/train_moves.pt', data_path+'/train/%s/train_%d.pt')
+    val_set = PeakDataset(moves_path+'/val_moves.pt', data_path+'/val/%s/val_%d.pt')
 
     # Check if a folder exists for this network version number, if not create it
     folder_path = '../networks/' + str(model_version)

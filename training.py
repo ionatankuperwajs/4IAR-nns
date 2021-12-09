@@ -44,7 +44,7 @@ def train(net, batch_size, n_epochs, learning_rate, train_set, val_set, L2, mode
     optimizer = optim.SGD(net.parameters(), lr=learning_rate, weight_decay=L2)
 
     # Set up a scheduler to decrease the learning rate if validation loss plateaus
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', factor=0.1, patience=1, verbose=True)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.2)
 
     # Training start time
     training_start_time = time.time()
