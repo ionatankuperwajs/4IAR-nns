@@ -5,8 +5,8 @@
 #SBATCH --output=slurm_output/4IAR_nn_21.out
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=48
-#SBATCH --time=168:00:00
-#SBATCH --mem=16GB
+#SBATCH --time=48:00:00
+#SBATCH --mem=40GB
 
 # For linear networks
 # python load_train.py -m 'linear' -v 1 -hl 1 -u 200 -b 12 -e 10 -lr .001 -d #overlay_ext3
