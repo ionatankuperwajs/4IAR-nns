@@ -6,6 +6,7 @@ import json
 import math
 import torch
 import numpy as np
+import tqdm
 
 #%% HELPER FUNCTIONS
 
@@ -68,12 +69,12 @@ num_moves = []
 game_count = 1
 
 # Paths for saving out preprocessed data
-moves_path = '/Volumes/Samsung_T5/Peak/nn_data/val_moves.pt'
-games_path = '/Volumes/Samsung_T5/Peak/nn_data/val/%s/val_%d.pt'
-meta_path = '/Volumes/Samsung_T5/Peak/nn_data/val_meta/%s/val_meta_%d.pt'
+moves_path = '/Volumes/Samsung_T5/Peak/nn_data/test_moves.pt'
+games_path = '/Volumes/Samsung_T5/Peak/nn_data/test/%s/val_%d.pt'
+meta_path = '/Volumes/Samsung_T5/Peak/nn_data/test_meta/%s/test_meta_%d.pt'
 
 # Loop through all the games (note: change references in loop to generate data for train, val, test)
-for game_path in val_paths:
+for game_path in tqdm.tqdm(test_paths):
 
     # Initialize lists to hold the board state tensors and next move labels
     tensors = []
@@ -95,7 +96,7 @@ for game_path in val_paths:
     AI_ID = get_AI_from_json(data)
 
     # Take every user move in the game, create its board tensor representation, and grab the label
-    for idx in range(0, len(game_list) - 1, 2):
+    for idx in range(0, len(game_list), 2):
         move_list = game_list[0:idx]
         move_tensor = create_tensor_from_list(move_list)
         move_label = map_move_to_label(game_list[idx])
@@ -135,6 +136,6 @@ import os
 n = 100
 for i in range(n):
     folder = '%03d' % i
-    path = '/Volumes/Samsung_T5/Peak/nn_data/val/%s' % folder
+    path = '/Volumes/Samsung_T5/Peak/nn_data/val_meta/%s' % folder
     if not os.path.exists(path):
         os.mkdir(path)

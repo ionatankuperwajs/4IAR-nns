@@ -454,7 +454,7 @@ def visualize_pred(board, output, target, outputOn=True, targetOn=True, save=Fal
         else:
                 plt.show()
 
-visualize_pred(board, output, target)
+# visualize_pred(board, output, target)
 
 #%% RETRIEVING DATA FOR SPECIFIC BOARD POSITIONS
 
@@ -566,6 +566,7 @@ def board_target_rank(targets):
 # Pick a board position and grab the subset
 # match_board = board
 # board_inds = board_subset(boards, match_board)
+
 
  #%% ELO AND EXPERTISE BOARDS
 

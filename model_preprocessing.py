@@ -4,10 +4,19 @@
 
 import csv
 import torch
+import math
 import numpy as np
 import tqdm
 
 #%% HELPER FUNCTIONS
+
+# Function that maps class labels back to the correct move
+def map_label_to_move(label):
+    temp_tensor = np.zeros((9,4))
+    row = math.floor(label / 4)
+    column = label - (row * 4)
+    temp_tensor[row, column] = 1
+    return np.argwhere(np.flip(np.fliplr(temp_tensor)).flatten('F') == 1).transpose()[0]
 
 # Function to return integer code for a list of moves
 def encode_move_list(moves):
@@ -47,7 +56,7 @@ for sub_folder in range(num_folders):
                 black_code = int(encode_move_list(black_pieces))
                 white_pieces = np.argwhere(np.flip(np.fliplr(games[0][move][1].numpy())).flatten('F') == 1).transpose()[0]
                 white_code = int(encode_move_list(white_pieces))
-                label = int(encode_move_list([games[1][move]]))
+                label = int(encode_move_list([map_label_to_move(games[1][move])[0]]))
                 response_time = meta[2][move]/1000
 
                 writer.writerow([black_code, white_code, 'Black', label, response_time, player])

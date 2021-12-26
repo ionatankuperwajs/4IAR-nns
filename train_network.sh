@@ -17,7 +17,7 @@
 # overlay_ext3=/nn_peakdata
 
 singularity \
-    exec $(for sqf in /scratch/ik1125/nn_peakdata/*.sqf; do echo --overlay $sqf:ro; done) \
+    exec $(for sqf in /scratch/ik1125/nn_peakdata/*.sqsh; do echo --overlay $sqf:ro; done) \
     --overlay /scratch/ik1125/overlay-50G-10M.ext3:ro \
     /scratch/work/public/singularity/cuda11.1.1-cudnn8-devel-ubuntu20.04.sif \
     /bin/bash -c "source /home/ik1125/.bashrc;
