@@ -25,25 +25,25 @@ def encode_move_list(moves):
 #%% PRE-PROCESSING
 
 # List of paths
-games_path = '/Volumes/Samsung_T5/Peak/nn_data/train/%s/train_%d.pt'
-meta_path = '/Volumes/Samsung_T5/Peak/nn_data/train_meta/%s/train_meta_%d.pt'
+games_path = '/Volumes/Samsung_T5/Peak/nn_data/test/%s/test_%d.pt'
+meta_path = '/Volumes/Samsung_T5/Peak/nn_data/test_meta/%s/test_meta_%d.pt'
 
 # Open a csv to write out to
 player = 'network'
-num_folders = 979
+num_folders = 55
 
-for sub_folder in range(num_folders):
+for sub_folder in range(0, num_folders):
     folder_string = f'{sub_folder:03}'
     if sub_folder == 0:
         count_init = 1
         num_iters = 9999
-    elif sub_folder == 978:
+    elif sub_folder == 54:
         count_init = sub_folder*10000
-        num_iters = 7094
+        num_iters = 3727
     else:
         count_init = sub_folder*10000
         num_iters = 10000
-    with open('/Volumes/Samsung_T5/Peak/nn_data/cognitive_model/train/' + player + '_' + str(sub_folder) + '.csv', 'w') as f1:
+    with open('/Volumes/Samsung_T5/Peak/nn_data/cognitive_model/test/' + player + '_' + str(sub_folder) + '.csv', 'w') as f1:
         writer = csv.writer(f1, delimiter='\t', lineterminator='\n', )
         for ii in tqdm.tqdm(range(num_iters)):
             game_count = count_init + ii

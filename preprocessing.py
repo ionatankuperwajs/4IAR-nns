@@ -17,12 +17,21 @@ def get_moves_from_json(data):
 
 # Function to get all of the AI in a game and return them in a list
 def get_AI_from_json(data):
-    return [d['aiID'] for d in data['data']['rounds'][-1]['analytic']['events'] if d['stateString']=='Turn' and d['playerString']=='opponent(0)']
+    AI_ID = []
+    for d in data['data']['rounds'][-1]['analytic']['events']:
+        if d['stateString'] == 'Turn' and d['playerString'][:3] == 'opp':
+            if 'aiID' in d:
+                AI_ID.append(d['aiID'])
+            else:
+                AI_max = data['data']['rounds'][-1]['problem']['ai_difficulty_max']
+                AI_min = data['data']['rounds'][-1]['problem']['ai_difficulty_min']
+                AI_ID.append((AI_max+AI_min)/2)
+    return AI_ID
 
 # Function to get all of the RT in a game and return them in a list
 def get_game_durations(data):
     durations = []
-    for turn in range(0,len(data['data']['rounds'])-1,2):
+    for turn in range(0,len(data['data']['rounds']),2):
         durations.append(data['data']['rounds'][turn]['duration'])
     return durations
 
@@ -70,7 +79,7 @@ game_count = 1
 
 # Paths for saving out preprocessed data
 moves_path = '/Volumes/Samsung_T5/Peak/nn_data/test_moves.pt'
-games_path = '/Volumes/Samsung_T5/Peak/nn_data/test/%s/val_%d.pt'
+games_path = '/Volumes/Samsung_T5/Peak/nn_data/test/%s/test_%d.pt'
 meta_path = '/Volumes/Samsung_T5/Peak/nn_data/test_meta/%s/test_meta_%d.pt'
 
 # Loop through all the games (note: change references in loop to generate data for train, val, test)
@@ -121,7 +130,7 @@ for game_path in tqdm.tqdm(test_paths):
     torch.save([tensors_stacked, labels_stacked], games_path % (folder_string, game_count))
 
     # Save out a csv with other information
-    torch.save([userID, time, response_times, AI_ID], meta_path % (folder_string, game_count))
+    # torch.save([userID, time, response_times, AI_ID], meta_path % (folder_string, game_count))
 
     game_count += 1
 
@@ -136,6 +145,6 @@ import os
 n = 100
 for i in range(n):
     folder = '%03d' % i
-    path = '/Volumes/Samsung_T5/Peak/nn_data/val_meta/%s' % folder
+    path = '/Volumes/Samsung_T5/Peak/nn_data/test/%s' % folder
     if not os.path.exists(path):
         os.mkdir(path)
