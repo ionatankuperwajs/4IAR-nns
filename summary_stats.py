@@ -10,10 +10,10 @@ import tqdm
 
 plt.rcParams.update({'font.size': 16})
 
-#%% LOADING IN THE RESULTS FROM A NETWORK ON THE TEST SET
+#%% Loading in the results from a network on the test set
 
 # Load in the text file with the board positions and results
-results_path = '/Volumes/Samsung_T5/Peak/networks/24/results_file.txt'
+results_path = '../../Data/networks/24/results_file.txt'
 results_file = open(results_path, 'r')
 results_lines = results_file.read().splitlines()
 
@@ -34,8 +34,9 @@ for line in tqdm.tqdm(results_lines):
 
         counter += 1
 
-#%% LOADING IN THE RESULTS FROM A TESTED COGNITIVE MODEL
-test_path = '../../fits/'
+#%% Loading in the restults from the baseline model
+
+test_path = '../../Data/test_fits_baseline/'
 
 test_ll = np.zeros(num_moves)
 moves = np.zeros((num_moves, 36))
@@ -48,7 +49,7 @@ for i in range(55):
     moves[counter:counter+np.shape(curr_moves)[0],:] = curr_moves
     counter += np.shape(curr_ll)[0]
 
-#%% SUMMARY STAT FUNCTIONS
+#%% Summary statistic functions
 
 # Function to convert a board index to a coordinate
 def move_to_coordinate(move):
@@ -347,7 +348,7 @@ def check_threat_defended(move, pieces):
 
         return threat_defended
 
-#%% DISTANCE TO BOARD CENTER
+#%% Distance to board center
 
 move_total = np.zeros(36)
 distance_data = np.zeros(36)
@@ -356,7 +357,7 @@ distance_model = np.zeros(36)
 distance_rand = np.zeros(36)
 
 # For each board position
-for ind in range(num_moves):
+for ind in tqdm.tqdm(range(num_moves)):
         # Define the components we need
         board = boards[ind, :].astype(np.int)
         output = outputs[ind, :]
@@ -368,7 +369,8 @@ for ind in range(num_moves):
         net_move = np.random.choice(np.arange(36), p=net_prob)
 
         # Get the cognitive model predictions
-        hist_model = np.flipud(moves[ind,:].reshape(4, 9, order='F')).flatten(order='F')
+        # hist_model = np.flipud(moves[ind,:].reshape(4, 9, order='F')).flatten(order='F')
+        hist_model = moves[ind,:]
         prediction_model = np.argmax(hist_model)
 
         # Grab the number of pieces on the board and the distance from the center
@@ -391,11 +393,11 @@ avg_rand_center = avg_rand_center[~np.isnan(avg_rand_center)]
 
 # Plot
 fig, ax = plt.subplots(figsize=(4,4))
-ax.scatter(np.arange(1,37,2), avg_data_center, lw=1, color='black', label='data')
-ax.plot(np.arange(1,37,2), avg_nn_center, lw=2, color='darkblue', label='neural network')
-ax.plot(np.arange(1,37,2), avg_model_center, lw=2, color='darkorange', label='planning model')
-# ax.fill_between(np.arange(1,37,2), avg_nn_center, avg_model_center, color='lightslategray',alpha=0.2)
-ax.plot(np.arange(1,37,2), avg_rand_center, lw=2, ls='--', color='darkgreen', label='random')
+# ax.scatter(np.arange(1,37,2), avg_data_center, lw=1, color='black', label='data')
+ax.plot(np.arange(1,37,2), avg_nn_center, lw=2, marker='o', color='darkblue', label='neural network')
+ax.plot(np.arange(1,37,2), avg_model_center, lw=2, marker='o', color='darkorange', label='baseline model')
+ax.fill_between(np.arange(1,37,2), avg_nn_center, avg_model_center, color='lightslategray',alpha=0.2)
+# ax.plot(np.arange(1,37,2), avg_rand_center, lw=2, ls='--', color='darkgreen', label='random')
 # ax.set_xlim(0,37)
 # ax.set_xticks([0,5,10,15,20,25,30,35])
 ax.set_xlabel('Move number')
@@ -407,7 +409,7 @@ ax.spines['right'].set_visible(False)
 plt.show()
 # plt.savefig('summary_center.png', format='png', dpi=1000, bbox_inches='tight')
 
-#%% DISTANCE FROM PIECES
+#%% Distance from pieces
 
 # Distance from own pieces
 move_total = np.zeros(36)
@@ -423,7 +425,7 @@ distance_model_opponent = np.zeros(36)
 distance_rand_opponent = np.zeros(36)
 
 # For each board position
-for ind in range(num_moves):
+for ind in tqdm.tqdm(range(num_moves)):
         # Define the components we need
         board = boards[ind, :].astype(np.int)
         output = outputs[ind, :]
@@ -435,7 +437,8 @@ for ind in range(num_moves):
         net_move = np.random.choice(np.arange(36), p=net_prob)
 
         # Get the cognitive model predictions
-        hist_model = np.flipud(moves[ind,:].reshape(4, 9, order='F')).flatten(order='F')
+        # hist_model = np.flipud(moves[ind,:].reshape(4, 9, order='F')).flatten(order='F')
+        hist_model = moves[ind,:]
         prediction_model = np.argmax(hist_model)
 
         # Grab the number of pieces on the board and the distance from the player and opponent's pieces
@@ -474,11 +477,11 @@ avg_rand_opponent = avg_rand_opponent[~np.isnan(avg_rand_opponent)]
 
 # Plot
 fig, ax = plt.subplots(figsize=(4,4))
-ax.scatter(np.arange(1,37,2), avg_data_player, lw=1, color='black', label='data')
-ax.plot(np.arange(1,37,2), avg_nn_player, lw=2, color='darkblue', label='neural network')
-ax.plot(np.arange(1,37,2), avg_model_player, lw=2, color='darkorange', label='planning model')
-# ax.fill_between(np.arange(1,37,2), avg_nn_player, avg_model_player, color='lightslategray',alpha=0.2)
-ax.plot(np.arange(1,37,2), avg_rand_player, lw=2, ls='--',color='darkgreen', label='random')
+# ax.scatter(np.arange(1,37,2), avg_data_player, lw=1, color='black', label='data')
+ax.plot(np.arange(1,37,2), avg_nn_player, lw=2, marker='o', color='darkblue', label='neural network')
+ax.plot(np.arange(1,37,2), avg_model_player, lw=2, marker='o', color='darkorange', label='planning model')
+ax.fill_between(np.arange(1,37,2), avg_nn_player, avg_model_player, color='lightslategray',alpha=0.2)
+# ax.plot(np.arange(1,37,2), avg_rand_player, lw=2, ls='--',color='darkgreen', label='random')
 # ax.set_xlim(0,37)
 # ax.set_xticks([0,5,10,15,20,25,30,35])
 ax.set_xlabel('Move number')
@@ -491,11 +494,11 @@ plt.show()
 # plt.savefig('summary_own_pieces.png', format='png', dpi=1000, bbox_inches='tight')
 
 fig, ax = plt.subplots(figsize=(4,4))
-ax.scatter(np.arange(1,37,2), avg_data_opponent, lw=1, color='black', label='data')
-ax.plot(np.arange(1,37,2), avg_nn_opponent, lw=2, color='darkblue', label='neural network')
-ax.plot(np.arange(1,37,2), avg_model_opponent, lw=2, color='darkorange', label='planning model')
-# ax.fill_between(np.arange(1,37,2), avg_nn_opponent, avg_model_opponent, color='lightslategray',alpha=0.2)
-ax.plot(np.arange(1,37,2), avg_rand_opponent, lw=2, ls='--',color='darkgreen', label='random')
+# ax.scatter(np.arange(1,37,2), avg_data_opponent, lw=1, color='black', label='data')
+ax.plot(np.arange(1,37,2), avg_nn_opponent, lw=2, marker='o', color='darkblue', label='neural network')
+ax.plot(np.arange(1,37,2), avg_model_opponent, lw=2, marker='o', color='darkorange', label='planning model')
+ax.fill_between(np.arange(1,37,2), avg_nn_opponent, avg_model_opponent, color='lightslategray',alpha=0.2)
+# ax.plot(np.arange(1,37,2), avg_rand_opponent, lw=2, ls='--',color='darkgreen', label='random')
 # ax.set_xlim(0,37)
 # ax.set_xticks([0,5,10,15,20,25,30,35])
 ax.set_xlabel('Move number')
@@ -507,7 +510,7 @@ ax.spines['right'].set_visible(False)
 plt.show()
 # plt.savefig('summary_opp_pieces.png', format='png', dpi=1000, bbox_inches='tight')
 
-#%% DISTANCE FROM CENTER OF MASS
+#%% Distance from center of mass
 
 # Distance from own mass
 move_total = np.zeros(36)
@@ -523,7 +526,7 @@ distance_model_opponent_mass = np.zeros(36)
 distance_rand_opponent_mass = np.zeros(36)
 
 # For each board position
-for ind in range(num_moves):
+for ind in tqdm.tqdm(range(num_moves)):
         # Define the components we need
         board = boards[ind, :].astype(np.int)
         output = outputs[ind, :]
@@ -535,7 +538,8 @@ for ind in range(num_moves):
         net_move = np.random.choice(np.arange(36), p=net_prob)
 
         # Get the cognitive model predictions
-        hist_model = np.flipud(moves[ind,:].reshape(4, 9, order='F')).flatten(order='F')
+        # hist_model = np.flipud(moves[ind,:].reshape(4, 9, order='F')).flatten(order='F')
+        hist_model = moves[ind,:]
         prediction_model = np.argmax(hist_model)
 
         # Grab the number of pieces on the board and the distance from the player and opponent's pieces
@@ -574,11 +578,11 @@ avg_rand_opponent_mass = avg_rand_opponent_mass[~np.isnan(avg_rand_opponent_mass
 
 # Plot
 fig, ax = plt.subplots(figsize=(4,4))
-ax.scatter(np.arange(1,37,2), avg_data_player_mass, lw=1, color='black', label='data')
-ax.plot(np.arange(1,37,2), avg_nn_player_mass, lw=2, color='darkblue', label='neural network')
-ax.plot(np.arange(1,37,2), avg_model_player_mass, lw=2, color='darkorange', label='planning model')
-# ax.fill_between(np.arange(1,37,2), avg_nn_player_mass, avg_model_player_mass, color='lightslategray',alpha=0.2)
-ax.plot(np.arange(1,37,2), avg_rand_player_mass, lw=2, ls='--',color='darkgreen', label='random')
+# ax.scatter(np.arange(1,37,2), avg_data_player_mass, lw=1, color='black', label='data')
+ax.plot(np.arange(1,37,2), avg_nn_player_mass, lw=2, marker='o', color='darkblue', label='neural network')
+ax.plot(np.arange(1,37,2), avg_model_player_mass, lw=2, marker='o', color='darkorange', label='planning model')
+ax.fill_between(np.arange(1,37,2), avg_nn_player_mass, avg_model_player_mass, color='lightslategray',alpha=0.2)
+# ax.plot(np.arange(1,37,2), avg_rand_player_mass, lw=2, ls='--',color='darkgreen', label='random')
 # ax.set_xlim(0,37)
 # ax.set_xticks([0,5,10,15,20,25,30,35])
 ax.set_xlabel('Move number')
@@ -591,11 +595,11 @@ plt.show()
 # plt.savefig('summary_own_mass.png', format='png', dpi=1000, bbox_inches='tight')
 
 fig, ax = plt.subplots(figsize=(4,4))
-ax.scatter(np.arange(1,37,2), avg_data_opponent_mass, lw=1, color='black', label='data')
-ax.plot(np.arange(1,37,2), avg_nn_opponent_mass, lw=2, color='darkblue', label='neural network')
-ax.plot(np.arange(1,37,2), avg_model_opponent_mass, lw=2, color='darkorange', label='planning model')
-# ax.fill_between(np.arange(1,37,2), avg_nn_opponent_mass, avg_model_opponent_mass, color='lightslategray',alpha=0.2)
-ax.plot(np.arange(1,37,2), avg_rand_opponent_mass, lw=2, ls='--',color='darkgreen', label='random')
+# ax.scatter(np.arange(1,37,2), avg_data_opponent_mass, lw=1, color='black', label='data')
+ax.plot(np.arange(1,37,2), avg_nn_opponent_mass, lw=2, marker='o', color='darkblue', label='neural network')
+ax.plot(np.arange(1,37,2), avg_model_opponent_mass, lw=2, marker='o', color='darkorange', label='planning model')
+ax.fill_between(np.arange(1,37,2), avg_nn_opponent_mass, avg_model_opponent_mass, color='lightslategray',alpha=0.2)
+# ax.plot(np.arange(1,37,2), avg_rand_opponent_mass, lw=2, ls='--',color='darkgreen', label='random')
 # ax.set_xlim(0,37)
 # ax.set_xticks([0,5,10,15,20,25,30,35])
 ax.set_xlabel('Move number')
@@ -607,7 +611,7 @@ ax.spines['right'].set_visible(False)
 plt.show()
 # plt.savefig('summary_opp_mass.png', format='png', dpi=1000, bbox_inches='tight')
 
-#%% NUMBER OF NEIGHBORING PIECES
+#%% Neighboring pieces
 
 # Number of neighboring own pieces
 move_total = np.zeros(36)
@@ -623,7 +627,7 @@ neighbor_model_opponent = np.zeros(36)
 neighbor_rand_opponent = np.zeros(36)
 
 # For each board position
-for ind in range(num_moves):
+for ind in tqdm.tqdm(range(num_moves)):
         # Define the components we need
         board = boards[ind, :].astype(np.int)
         output = outputs[ind, :]
@@ -635,7 +639,8 @@ for ind in range(num_moves):
         net_move = np.random.choice(np.arange(36), p=net_prob)
 
         # Get the cognitive model predictions
-        hist_model = np.flipud(moves[ind,:].reshape(4, 9, order='F')).flatten(order='F')
+        # hist_model = np.flipud(moves[ind,:].reshape(4, 9, order='F')).flatten(order='F')
+        hist_model = moves[ind,:]
         prediction_model = np.argmax(hist_model)
 
         # Grab the number of pieces on the board and the distance from the player and opponent's pieces
@@ -674,11 +679,11 @@ avg_rand_opponent_neighbor = avg_rand_opponent_neighbor[~np.isnan(avg_rand_oppon
 
 # Plot
 fig, ax = plt.subplots(figsize=(4,4))
-ax.scatter(np.arange(1,37,2), avg_data_player_neighbor, lw=1, color='black', label='data')
-ax.plot(np.arange(1,37,2), avg_nn_player_neighbor, lw=2, color='darkblue', label='neural network')
-ax.plot(np.arange(1,37,2), avg_model_player_neighbor, lw=2, color='darkorange', label='planning model')
-# ax.fill_between(np.arange(1,37,2), avg_nn_player_neighbor, avg_model_player_neighbor, color='lightslategray',alpha=0.2)
-ax.plot(np.arange(1,37,2), avg_rand_player_neighbor, lw=2, ls='--',color='darkgreen', label='random')
+# ax.scatter(np.arange(1,37,2), avg_data_player_neighbor, lw=1, color='black', label='data')
+ax.plot(np.arange(1,37,2), avg_nn_player_neighbor, lw=2, marker='o', color='darkblue', label='neural network')
+ax.plot(np.arange(1,37,2), avg_model_player_neighbor, lw=2, marker='o', color='darkorange', label='planning model')
+ax.fill_between(np.arange(1,37,2), avg_nn_player_neighbor, avg_model_player_neighbor, color='lightslategray',alpha=0.2)
+# ax.plot(np.arange(1,37,2), avg_rand_player_neighbor, lw=2, ls='--',color='darkgreen', label='random')
 # ax.set_xlim(0,37)
 ax.set_xticks([0,10,20,30])
 ax.set_xlabel('Move number')
@@ -687,15 +692,15 @@ ax.set_ylim(-.1,2.55)
 # ax.legend()
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
-plt.show()
-# plt.savefig('summary_own_neighbors.png', format='png', dpi=1000, bbox_inches='tight')
+# plt.show()
+plt.savefig('summary_own_neighbors.png', format='png', dpi=1000, bbox_inches='tight')
 
 fig, ax = plt.subplots(figsize=(4,4))
-ax.scatter(np.arange(1,37,2), avg_data_opponent_neighbor, lw=1, color='black', label='data')
-ax.plot(np.arange(1,37,2), avg_nn_opponent_neighbor, lw=2, color='darkblue', label='network')
-ax.plot(np.arange(1,37,2), avg_model_opponent_neighbor, lw=2, color='darkorange', label='planning model')
-# ax.fill_between(np.arange(1,37,2), avg_nn_opponent_neighbor, avg_model_opponent_neighbor, color='lightslategray',alpha=0.2)
-ax.plot(np.arange(1,37,2), avg_rand_opponent_neighbor, lw=2, ls='--',color='darkgreen', label='random')
+# ax.scatter(np.arange(1,37,2), avg_data_opponent_neighbor, lw=1, color='black', label='data')
+ax.plot(np.arange(1,37,2), avg_nn_opponent_neighbor, lw=2, marker='o', color='darkblue', label='network')
+ax.plot(np.arange(1,37,2), avg_model_opponent_neighbor, lw=2, marker='o', color='darkorange', label='planning model')
+ax.fill_between(np.arange(1,37,2), avg_nn_opponent_neighbor, avg_model_opponent_neighbor, color='lightslategray',alpha=0.2)
+# ax.plot(np.arange(1,37,2), avg_rand_opponent_neighbor, lw=2, ls='--',color='darkgreen', label='random')
 # ax.set_xlim(0,37)
 ax.set_xticks([0,10,20,30])
 ax.set_xlabel('Move number')
@@ -704,10 +709,10 @@ ax.set_ylim(-.1,2.55)
 # ax.legend()
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
-plt.show()
-# plt.savefig('summary_opp_neighbors.png', format='png', dpi=1000, bbox_inches='tight')
+# plt.show()
+plt.savefig('summary_opp_neighbors.png', format='png', dpi=1000, bbox_inches='tight')
 
-#%% NUMBER OF THREATS
+#%% Number of threats
 
 # Number of threats made
 move_total = np.zeros(36)
@@ -723,7 +728,7 @@ threats_model_opponent = np.zeros(36)
 threats_rand_opponent = np.zeros(36)
 
 # For each board position
-for ind in range(num_moves):
+for ind in tqdm.tqdm(range(num_moves)):
         # Define the components we need
         board = boards[ind, :].astype(np.int)
         output = outputs[ind, :]
@@ -735,7 +740,8 @@ for ind in range(num_moves):
         net_move = np.random.choice(np.arange(36), p=net_prob)
 
         # Get the cognitive model predictions
-        hist_model = np.flipud(moves[ind,:].reshape(4, 9, order='F')).flatten(order='F')
+        # hist_model = np.flipud(moves[ind,:].reshape(4, 9, order='F')).flatten(order='F')
+        hist_model = moves[ind,:]
         prediction_model = np.argmax(hist_model)
 
         # Grab the number of pieces on the board and if a threat was made
@@ -781,11 +787,11 @@ avg_rand_opponent_threats = avg_rand_opponent_threats[~np.isnan(avg_rand_opponen
 
 # Plot
 fig, ax = plt.subplots(figsize=(4,4))
-ax.scatter(np.arange(1,37,2), avg_data_player_threats, lw=1, color='black', label='data')
-ax.plot(np.arange(1,37,2), avg_nn_player_threats, lw=2, color='darkblue',  label='neural network')
-ax.plot(np.arange(1,37,2), avg_model_player_threats, lw=2, color='darkorange', label='planning model')
-# ax.fill_between(np.arange(1,37,2), avg_nn_player_threats, avg_model_player_threats, color='lightslategray',alpha=0.2)
-ax.plot(np.arange(1,37,2), avg_rand_player_threats, lw=2, ls='--',color='darkgreen', label='random')
+# ax.scatter(np.arange(1,37,2), avg_data_player_threats, lw=1, color='black', label='data')
+ax.plot(np.arange(1,37,2), avg_nn_player_threats, lw=2, marker='o', color='darkblue',  label='neural network')
+ax.plot(np.arange(1,37,2), avg_model_player_threats, lw=2, marker='o', color='darkorange', label='planning model')
+ax.fill_between(np.arange(1,37,2), avg_nn_player_threats, avg_model_player_threats, color='lightslategray',alpha=0.2)
+# ax.plot(np.arange(1,37,2), avg_rand_player_threats, lw=2, ls='--',color='darkgreen', label='random')
 # ax.set_xlim(0,37)
 ax.set_xticks([0,10,20,30])
 ax.set_xlabel('Move number')
@@ -798,11 +804,11 @@ plt.show()
 # plt.savefig('summary_threats_made.png', format='png', dpi=1000, bbox_inches='tight')
 
 fig, ax = plt.subplots(figsize=(4,4))
-ax.scatter(np.arange(1,37,2), avg_data_opponent_threats, lw=1, color='black', label='data')
-ax.plot(np.arange(1,37,2), avg_nn_opponent_threats, lw=2, color='darkblue', label='neural network')
-ax.plot(np.arange(1,37,2), avg_model_opponent_threats, lw=2, color='darkorange', label='planning')
-# ax.fill_between(np.arange(1,37,2), avg_nn_opponent_threats, avg_model_opponent_threats, color='lightslategray',alpha=0.2)
-ax.plot(np.arange(1,37,2), avg_rand_opponent_threats, lw=2, ls='--',color='darkgreen', label='random')
+# ax.scatter(np.arange(1,37,2), avg_data_opponent_threats, lw=1, color='black', label='data')
+ax.plot(np.arange(1,37,2), avg_nn_opponent_threats, lw=2, marker='o', color='darkblue', label='neural network')
+ax.plot(np.arange(1,37,2), avg_model_opponent_threats, lw=2, marker='o', color='darkorange', label='planning')
+ax.fill_between(np.arange(1,37,2), avg_nn_opponent_threats, avg_model_opponent_threats, color='lightslategray',alpha=0.2)
+# ax.plot(np.arange(1,37,2), avg_rand_opponent_threats, lw=2, ls='--',color='darkgreen', label='random')
 # ax.set_xlim(0,37)
 ax.set_xticks([0,10,20,30])
 ax.set_xlabel('Move number')
@@ -813,128 +819,3 @@ ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 plt.show()
 # plt.savefig('summary_threats_defended.png', format='png', dpi=1000, bbox_inches='tight')
-
-#%% DISTANCE TO TOP LEFT CORNER
-
-move_total = np.zeros(36)
-distance_data = np.zeros(36)
-distance_nn = np.zeros(36)
-distance_model = np.zeros(36)
-distance_rand = np.zeros(36)
-
-# For each board position
-for ind in range(num_moves):
-        # Define the components we need
-        board = boards[ind, :].astype(np.int)
-        output = outputs[ind, :]
-        prediction = int(predictions[ind, :][0])
-        target = int(targets[ind, :][0])
-
-        # Pick a move according to the network probabilities
-        net_prob = np.exp(output)/np.sum(np.exp(output))
-        net_move = np.random.choice(np.arange(36), p=net_prob)
-
-        # Get the cognitive model predictions
-        hist_model = np.flipud(moves[ind,:].reshape(4, 9, order='F')).flatten(order='F')
-        prediction_model = np.argmax(hist_model)
-
-        # Grab the number of pieces on the board and the distance from the top left
-        num_pieces = np.count_nonzero(board)
-        move_total[num_pieces] += 1
-        distance_data[num_pieces] += distance_from_pieces(0, [target])
-        distance_nn[num_pieces] += distance_from_pieces(0, [net_move])
-        distance_model[num_pieces] += distance_from_pieces(0, [prediction_model])
-        distance_rand[num_pieces] += distance_from_pieces(0, [np.random.choice(np.where(board == 0)[0])])
-
-# Divide to compute the averages, remove the nans and return
-avg_data_topleft = distance_data/move_total
-avg_data_topleft = avg_data_topleft[~np.isnan(avg_data_topleft)]
-avg_nn_topleft = distance_nn/move_total
-avg_nn_topleft = avg_nn_topleft[~np.isnan(avg_nn_topleft)]
-avg_model_topleft = distance_model/move_total
-avg_model_topleft = avg_model_topleft[~np.isnan(avg_model_topleft)]
-avg_rand_topleft = distance_rand/move_total
-avg_rand_topleft = avg_rand_topleft[~np.isnan(avg_rand_topleft)]
-
-# Plot
-fig, ax = plt.subplots(figsize=(4,4))
-ax.scatter(np.arange(1,37,2), avg_data_topleft, lw=1, color='black', label='data')
-ax.plot(np.arange(1,37,2), avg_nn_topleft, lw=2, color='darkblue', label='neural network')
-ax.plot(np.arange(1,37,2), avg_model_topleft, lw=2, color='darkorange', label='planning model')
-# ax.fill_between(np.arange(1,37,2), avg_nn_topleft, avg_model_topleft, color='lightslategray',alpha=0.2)
-ax.plot(np.arange(1,37,2), avg_rand_topleft, lw=2, ls='--', color='darkgreen', label='random')
-# ax.set_xlim(0,37)
-# ax.set_xticks([0,5,10,15,20,25,30,35])
-ax.set_xlabel('Move number')
-ax.set_ylabel('Distance to\ntop left corner')
-ax.set_ylim(4.9,6.1)
-# ax.legend(frameon=False,loc='lower right')
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
-plt.show()
-# plt.savefig('summary_topleft.png', format='png', dpi=1000, bbox_inches='tight')
-
-#%% NUMBER OF MOVES ON THE LEFT SIDE OF THE BOARD
-
-move_total = np.zeros(36)
-left_data = np.zeros(36)
-left_nn = np.zeros(36)
-left_model = np.zeros(36)
-left_rand = np.zeros(36)
-
-# For each board position
-for ind in range(num_moves):
-        # Define the components we need
-        board = boards[ind, :].astype(np.int)
-        output = outputs[ind, :]
-        prediction = int(predictions[ind, :][0])
-        target = int(targets[ind, :][0])
-
-        # Pick a move according to the network probabilities
-        net_prob = np.exp(output)/np.sum(np.exp(output))
-        net_move = np.random.choice(np.arange(36), p=net_prob)
-
-        # Get the cognitive model predictions
-        hist_model = np.flipud(moves[ind,:].reshape(4, 9, order='F')).flatten(order='F')
-        prediction_model = np.argmax(hist_model)
-
-        # Grab the number of pieces on the board and if a threat was made
-        num_pieces = np.count_nonzero(board)
-        move_total[num_pieces] += 1
-
-        if check_left(target):
-                left_data[num_pieces] += 1
-        if check_left(net_move):
-                left_nn[num_pieces] += 1
-        if check_left(prediction_model):
-                left_model[num_pieces] += 1
-        if check_left(np.random.choice(np.where(board == 0)[0])):
-                left_rand[num_pieces] += 1
-
-# Divide to compute the averages, remove the nans and return
-avg_left_data = left_data/move_total
-avg_left_data = avg_left_data[~np.isnan(avg_left_data)]
-avg_left_nn = left_nn/move_total
-avg_left_nn = avg_left_nn[~np.isnan(avg_left_nn)]
-avg_left_model = left_model/move_total
-avg_left_model = avg_left_model[~np.isnan(avg_left_model)]
-avg_left_rand = left_rand/move_total
-avg_left_rand = avg_left_rand[~np.isnan(avg_left_rand)]
-
-# Plot
-fig, ax = plt.subplots(figsize=(4,4))
-ax.scatter(np.arange(1,37,2), avg_left_data, lw=1, color='black', label='data')
-ax.plot(np.arange(1,37,2), avg_left_nn, lw=2, color='darkblue', label='neural network')
-ax.plot(np.arange(1,37,2), avg_left_model, lw=2, color='darkorange', label='planning model')
-# ax.fill_between(np.arange(1,37,2), avg_left_nn, avg_left_model, color='lightslategray',alpha=0.2)
-ax.plot(np.arange(1,37,2), avg_left_rand, lw=2, ls='--',color='darkgreen', label='random')
-# ax.set_xlim(0,37)
-ax.set_xticks([0,10,20,30])
-ax.set_xlabel('Move number')
-ax.set_ylabel('Number of\nleft moves made')
-ax.set_ylim(0.44,0.6)
-# ax.legend()
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
-plt.show()
-# plt.savefig('summary_left_made.png', format='png', dpi=1000, bbox_inches='tight')

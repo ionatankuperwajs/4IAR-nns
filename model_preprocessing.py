@@ -8,7 +8,7 @@ import math
 import numpy as np
 import tqdm
 
-#%% HELPER FUNCTIONS
+#%% Helper functions
 
 # Function that maps class labels back to the correct move
 def map_label_to_move(label):
@@ -22,7 +22,7 @@ def map_label_to_move(label):
 def encode_move_list(moves):
     return np.sum([2**m for m in moves])
 
-#%% PRE-PROCESSING
+#%% Pre-processing
 
 # List of paths
 games_path = '/Volumes/Samsung_T5/Peak/nn_data/test/%s/test_%d.pt'

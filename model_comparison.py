@@ -14,10 +14,10 @@ import tqdm
 
 plt.rcParams.update({'font.size': 16})
 
-#%% LOADING IN THE RESULTS FROM A COMPARISON NETWORK
+#%% Loading in the results from a comparison network
 
 # Load in the text file with the board positions and results
-results_path = '../../networks/24/results_file.txt'
+results_path = '../../Data/networks/24/results_file.txt'
 results_file = open(results_path, 'r')
 results_lines = results_file.read().splitlines()
 
@@ -38,8 +38,9 @@ for line in tqdm.tqdm(results_lines):
 
         counter += 1
 
-#%% LOADING IN THE RESULTS FROM A TESTED COGNITIVE MODEL
-test_path = '../../fits_5/'
+#%% Loading in the results from a tested cognitive model
+
+test_path = '../../Data/test_fits_baseline/'
 
 test_ll = np.zeros(num_moves)
 moves = np.zeros((num_moves, 36))
@@ -53,7 +54,7 @@ for i in tqdm.tqdm(range(55)):
     moves[counter:counter+np.shape(curr_moves)[0],:] = curr_moves
     counter += np.shape(curr_ll)[0]
 
-#%% COMPARE THE NETWORK AND MODEL OUTPUTS
+#%% Comparing the network and model outputs
 
 # Initialize counter for the overall LL
 LL_nn = np.zeros(num_moves)
@@ -81,7 +82,8 @@ for ind in tqdm.tqdm(range(num_moves)):
         LL_nn[ind] = loss_size.item()
 
         # Get the cognitive model predictions
-        hist_model = np.flipud(moves[ind,:].reshape(4, 9, order='F')).flatten(order='F')
+        # hist_model = np.flipud(moves[ind,:].reshape(4, 9, order='F')).flatten(order='F')
+        hist_model = moves[ind,:]
         prediction_model = np.argmax(hist_model)
 
         # Get a random prediction
@@ -108,7 +110,24 @@ move_accuracy_model = move_accuracy_model[~np.isnan(move_accuracy_model)]
 move_accuracy_rand = moves_rand/totals
 move_accuracy_rand = move_accuracy_rand[~np.isnan(move_accuracy_rand)]
 
-#%% PLOT
+#%% Plotting
+
+fig, ax = plt.subplots()
+plot = ax.hist2d(test_ll, LL_nn, (200, 200), cmap=plt.cm.Greys, norm = colors.LogNorm())
+ax.plot([0, 1], [0, 1], transform=ax.transAxes, color='black', lw=2, ls='--')
+ax.set_xlim(0,10)
+ax.set_ylim(0,10)
+ax.set_xticks([0,5,10])
+ax.set_yticks([0,5,10])
+ax.set_xlabel('Baseline model\nnegative log-likelihood')
+ax.set_ylabel('Neural network\nnegative log-likelihood')
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+cbar = plt.colorbar(plot[3])
+cbar.minorticks_off()
+cbar.ax.set_ylabel('Number of moves', rotation=-90, labelpad=20)
+plt.show()
+# plt.savefig('comparison.png', format='png', dpi=1000, bbox_inches='tight')
 
 # Plot the log-likelihoods as a histogram
 logs_diff = LL_nn - test_ll
@@ -124,7 +143,7 @@ ax.set_yticks([0,500000,1000000,1500000])
 ax.set_yticklabels(['0','500k','1M','1.5M'])
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
-ax.text(0.75, 0.9,'Evidence favoring \n planning model',
+ax.text(0.75, 0.9,'Evidence favoring \n baseline model',
      horizontalalignment='center',
      verticalalignment='center',
      transform = ax.transAxes)
@@ -138,7 +157,7 @@ plt.show()
 # Plot the accuracy per move
 fig, ax = plt.subplots(figsize=(4,4))
 ax.plot(np.arange(1,37,2), move_accuracy_nn, lw=2, color='darkblue', marker='o',label='neural network')
-ax.plot(np.arange(1,37,2), move_accuracy_model, lw=2, color='darkorange', marker='o',label='planning model')
+ax.plot(np.arange(1,37,2), move_accuracy_model, lw=2, color='darkorange', marker='o',label='baseline model')
 ax.fill_between(np.arange(1,37,2), move_accuracy_nn, move_accuracy_model, color='lightslategray',alpha=0.2)
 ax.legend(frameon=False)
 ax.set_xlim(0,37)
@@ -150,7 +169,7 @@ ax.spines['right'].set_visible(False)
 plt.show()
 # plt.savefig('move_comparison.png', format='png', dpi=1000, bbox_inches='tight')
 
-#%% FIND DIFFERENCES BETWEEN THE NETWORK AND MODEL
+#%% Find the differences between the network and model
 
 # Return a subset of the data where the network is correct and the model is incorrect
 disagree_inds = []
@@ -165,7 +184,8 @@ for ind in range(num_moves):
         target = int(targets[ind, :][0])
 
         # Get the cognitive model predictions
-        hist_model = np.flipud(moves[ind,:].reshape(4, 9, order='F')).flatten(order='F')
+        # hist_model = np.flipud(moves[ind,:].reshape(4, 9, order='F')).flatten(order='F')
+        hist_model = moves[ind, :]
         prediction_model = np.argmax(hist_model)
 
         # If the model and network disagree AND the network is correct
@@ -173,7 +193,7 @@ for ind in range(num_moves):
             # Grab the index
             disagree_inds.append(ind)
 
-#%% VISUALIZING NETWORK OUTPUT
+#%% Visualizing network output
 
 # Function that takes a board and model output and visualizes it
 def visualize_pred(board, output, target, model, outputOn=True, targetOn=True, modelOn=True, save=False, filename=''):
@@ -270,7 +290,7 @@ def visualize_pred(board, output, target, model, outputOn=True, targetOn=True, m
         else:
                 plt.show()
 
-#%% MODEL-NN DISAGREEMENT BOARDS
+#%% Model-network disagreement boards
 
 # Look at k boards
 k = 50
@@ -281,12 +301,13 @@ for i in range(k):
         board = boards[curr_ind, :]
         output = outputs[curr_ind, :]
         target = targets[curr_ind, :]
-        hist_model = np.flipud(moves[curr_ind,:].reshape(4, 9, order='F')).flatten(order='F')
+        # hist_model = np.flipud(moves[curr_ind,:].reshape(4, 9, order='F')).flatten(order='F')
+        hist_model = moves[curr_ind, :]
         model = np.argmax(hist_model)
         # visualize_pred(board, output, target, model)
         visualize_pred(board, output, target, model, True, True, True, True, str(i)+'.png')
 
-#%% FIND LARGEST DIFFERENCES BETWEEN THE NETWORK AND MODEL
+#%% Finding the largest differences between the network and the model
 
 # Look at all positions in the dataset and compute the KL divergence
 kl = []
@@ -311,7 +332,7 @@ for ind in tqdm.tqdm(range(num_moves)):
         kl_divergence = kl_loss(output_norm, torch.from_numpy(hist_model/np.sum(hist_model)))
         kl.append(kl_divergence.item())
 
-#%% MODEL-NN DIFFERENCE BOARDS
+#%% Model-network difference boards
 
 # Sort boards by kl divergence
 inds_sort = np.argsort(kl)
@@ -322,6 +343,7 @@ k = 50
 
 # Visualize the top or bottom boards with their outputs
 for i in range(k):
+        # i = i + 100000
         curr_ind = inds_sort[len(inds_sort)-1-i]
         board = boards[curr_ind, :]
         output = outputs[curr_ind, :]
@@ -332,14 +354,14 @@ for i in range(k):
         # visualize_pred(board, output, target, model)
         visualize_pred(board, output, target, model, True, True, True, True, str(i)+'.png')
 
-#%% MODEL-DATA DIFFERENCE BOARDS
+#%% Model-data difference boards
 
 # Sort boards by log likelihood of the planning model
 inds_ll = np.argsort(test_ll)
 model_ll_sort = np.sort(test_ll)
 
 # Look at k boards
-k = 10
+k = 50
 
 # Visualize the top or bottom boards with their outputs
 for i in range(k):
@@ -347,7 +369,8 @@ for i in range(k):
         board = boards[curr_ind, :]
         output = outputs[curr_ind, :]
         target = targets[curr_ind, :]
-        hist_model = np.flipud(moves[curr_ind,:].reshape(4, 9, order='F')).flatten(order='F')
+        # hist_model = np.flipud(moves[curr_ind,:].reshape(4, 9, order='F')).flatten(order='F')
+        hist_model = moves[curr_ind,:]
         model = np.argmax(hist_model)
-        visualize_pred(board, output, target, model)
-        # visualize_pred(board, output, target, model, False, True, True, True, str(i)+'.png')
+        # visualize_pred(board, output, target, model)
+        visualize_pred(board, output, target, model, True, True, True, True, str(i)+'.png')

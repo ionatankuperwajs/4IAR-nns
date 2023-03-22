@@ -8,7 +8,7 @@ import torch
 import numpy as np
 import tqdm
 
-#%% HELPER FUNCTIONS
+#%% Helper functions
 
 # Function to get all of the moves in a game and return them in a list
 def get_moves_from_json(data):
@@ -56,7 +56,7 @@ def create_tensor_from_list(move_list):
 def map_move_to_label(move):
     return abs(move%9-8)*4+math.floor(move/9)
 
-#%% PRE-PROCESSING
+#%% Pre-processing
 
 # Read in the filtered list of games
 with open('/Volumes/Samsung_T5/Peak/nn_data/all_paths.txt', 'r') as filehandle:
@@ -137,9 +137,7 @@ for game_path in tqdm.tqdm(test_paths):
 # Save out the numpy array with total number of moves per game at the end
 torch.save(np.asarray(num_moves), moves_path)
 
-#%%
-
-# Code to make folders if they don't exist
+#%% Code to make folders if they don't exist
 
 import os
 n = 100

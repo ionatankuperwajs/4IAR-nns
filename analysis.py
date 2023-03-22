@@ -14,7 +14,7 @@ import json
 
 plt.rcParams.update({'font.size': 16})
 
-#%% NETWORK COMPARISON
+#%% Network comparison
 
 layers = [5, 10, 20, 40, 80]
 test_loss200 = [1.978, 1.946, 1.922, 1.909, 1.900]
@@ -40,7 +40,7 @@ ax.spines['right'].set_visible(False)
 # plt.show()
 plt.savefig('test_comparison.png', format='png', dpi=1000, bbox_inches='tight')
 
-#%% LEARNING CURVES
+#%% Learning curves
 
 # Load and plot the learning curves
 losses = torch.load('/Volumes/Samsung_T5/Peak/networks/24/losses_9')
@@ -77,7 +77,7 @@ def plot_learning(train_loss, val_loss, lb=1.85, ub=1.96):
 
 plot_learning(train_loss, val_loss)
 
-#%% LOADING IN THE RESULTS FROM A NETWORK ON THE TEST SET
+#%% Loading in the results from a network on the test set
 
 # Load in the text file with the board positions and results
 results_path = '/Volumes/Samsung_T5/Peak/networks/23/results_file.txt'
@@ -101,7 +101,7 @@ for line in tqdm.tqdm(results_lines):
 
         counter += 1
 
-#%% SANITY CHECK ANALYSIS
+#%% Sanity check analysis
 
 # Initialize a numpy array with number of guesses
 guesses = np.zeros(36)
@@ -157,7 +157,7 @@ for i in range(len(guesses)):
 move_accuracy = moves/totals
 move_accuracy = move_accuracy[~np.isnan(move_accuracy)]
 
-#%% SANITY CHECK PLOTS
+#%% Sanity check plots
 
 # Plot accuracy as a function of number of guesses
 fig, ax = plt.subplots(figsize=(4,4))
@@ -204,7 +204,7 @@ ax.set_yticks([0,5,10])
 # plt.show()
 plt.savefig('corr_unit.png', format='png', dpi=1000, bbox_inches='tight')
 
-#%% EXPERTISE AND ELO ANALYSIS
+#%% Expertise and elo analysis
 
 # Load the lists with IDs, final Elo, and number of games played
 final20_games = np.load('/Users/ionatankuperwajs/Desktop/MaLab/Peak/Code/peak-analysis/final20_games.npy')
@@ -350,7 +350,7 @@ ax.set_ylim(1.79,1.87)
 plt.savefig('predictability_games.png', format='png', dpi=1000, bbox_inches='tight')
 
 
-#%% VISUALIZING NETWORK OUTPUT
+#%% Visualizing network output
 
 # Function that takes a board and model output and visualizes it
 def visualize_pred(board, output, target, outputOn=True, targetOn=True, save=False, filename=''):
@@ -425,7 +425,7 @@ def visualize_pred(board, output, target, outputOn=True, targetOn=True, save=Fal
 
 # visualize_pred(board, output, target)
 
-#%% RETRIEVING DATA FOR SPECIFIC BOARD POSITIONS
+#%% Retrieving data for specific board positions
 
 # ** THE INPUT DATA TO THESE FUNCTIONS MUST BE A LIST OF BOARDS RATHER THAN A NUMPY ARRAY **
 
@@ -537,7 +537,7 @@ def board_target_rank(targets):
 # board_inds = board_subset(boards, match_board)
 
 
- #%% ELO AND EXPERTISE BOARDS
+ #%% Elo and expertise boards
 
 # Sort the elos and boards similarly
 sort_idxs = np.asarray(elos).argsort()
@@ -554,7 +554,7 @@ for i in range(k):
         # visualize_pred(board, output, target)
         visualize_pred(board, output, target, True, True, True, str(i)+'.png')
 
-#%% ACCURACY BOARDS
+#%% Accuracy boards
 
 # Sort boards by log likelihood of the neural network
 inds_ll = np.argsort(human_probs24)
@@ -572,7 +572,7 @@ for i in range(k):
         # visualize_pred(board, output, target)
         visualize_pred(board, output, target, True, True, True, str(i)+'.png')
 
-#%% ENTROPY
+#%% Entropy analysis
 
 # Compute the entropy for all positions
 entropy = np.zeros(num_moves)
@@ -630,199 +630,3 @@ ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 # plt.show()
 plt.savefig('entropy.png', format='png', dpi=1000, bbox_inches='tight')
-
-#%% OPENING THEORY
-
-# # Convert all the arrays we have to lists
-# boards_list = boards.tolist()
-# outputs_list = outputs.tolist()
-# targets_list = targets.tolist()
-#
-# # Find the most common opening moves in the data and visualize the top 1
-# opening_inds = board_subset_len(boards_list, 0)
-# opening_boards = [boards_list[i] for i in opening_inds]
-# opening_outputs = [outputs_list[i] for i in opening_inds]
-# opening_targets = [targets_list[i][0] for i in opening_inds]
-#
-# opening_rank, first_ind = board_target_rank(opening_targets)
-# op1 = 17
-# op_ind1 = first_ind[op1]
-# visualize_pred(np.asarray(opening_boards[op_ind1]), np.asarray(opening_outputs[op_ind1]), np.asarray(opening_targets[op_ind1]), save=True, filename='op1.png')
-#
-# # Find the most common 2-piece positions for the most common opening
-# second_inds = board_subset_len(boards_list, 2)
-# second_boards = [boards_list[i] for i in second_inds]
-# second_outputs = [outputs_list[i] for i in second_inds]
-# second_targets = [targets_list[i][0] for i in second_inds]
-#
-# opening1 = opening_boards[op_ind1]
-# opening1[op1] = 1
-# second_inds_op1 = board_subset_pattern(second_boards, opening1)
-# second_boards_op1 = [second_boards[i] for i in second_inds_op1]
-# second_outputs_op1 = [second_outputs[i] for i in second_inds_op1]
-# second_targets_op1 = [second_targets[i] for i in second_inds_op1]
-#
-# second_op1_rank, second_ind = board_subset_rank(second_boards_op1)
-# second1 = (17, 18)
-# second_ind1 = second_ind[second1]
-# visualize_pred(np.asarray(second_boards_op1[second_ind1]), np.asarray(second_outputs_op1[second_ind1]), np.asarray(second_targets_op1[second_ind1]), outputOn=False, targetOn=False, save=True, filename='second1.png')
-# second2 = (17, 13)
-# second_ind2 = second_ind[second2]
-# visualize_pred(np.asarray(second_boards_op1[second_ind2]), np.asarray(second_outputs_op1[second_ind2]), np.asarray(second_targets_op1[second_ind2]), outputOn=False, targetOn=False, save=True, filename='second2.png')
-# second3 = (17, 21)
-# second_ind3 = second_ind[second3]
-# visualize_pred(np.asarray(second_boards_op1[second_ind3]), np.asarray(second_outputs_op1[second_ind3]), np.asarray(second_targets_op1[second_ind3]), outputOn=False, targetOn=False, save=True, filename='second3.png')
-# second4 = (17, 22)
-# second_ind4 = second_ind[second4]
-# visualize_pred(np.asarray(second_boards_op1[second_ind4]), np.asarray(second_outputs_op1[second_ind4]), np.asarray(second_targets_op1[second_ind4]), outputOn=False, targetOn=False, save=True, filename='second4.png')
-#
-# # Find the most common third move responses for the most common opening and 2-piece board
-# second1_inds = board_subset_pattern(second_boards_op1, second_boards_op1[second_ind1])
-# third_boards_second1 = [second_boards_op1[i] for i in second1_inds]
-# third_outputs_second1 = [second_outputs_op1[i] for i in second1_inds]
-# third_targets_second1 = [second_targets_op1[i] for i in second1_inds]
-# third_second1_rank, third_second1_ind = board_target_rank(third_targets_second1)
-# third1 = 13
-# third_ind1 = third_second1_ind[third1]
-# visualize_pred(np.asarray(third_boards_second1[third_ind1]), np.asarray(third_outputs_second1[third_ind1]), np.asarray(third_targets_second1[third_ind1]), outputOn=True, targetOn=True, save=True, filename='third1.png')
-# third2 = 14
-# third_ind2 = third_second1_ind[third2]
-# visualize_pred(np.asarray(third_boards_second1[third_ind2]), np.asarray(third_outputs_second1[third_ind2]), np.asarray(third_targets_second1[third_ind2]), outputOn=True, targetOn=True, save=True, filename='third2.png')
-# third3 = 21
-# third_ind3 = third_second1_ind[third3]
-# visualize_pred(np.asarray(third_boards_second1[third_ind3]), np.asarray(third_outputs_second1[third_ind3]), np.asarray(third_targets_second1[third_ind3]), outputOn=True, targetOn=True, save=True, filename='third3.png')
-# third4 = 22
-# third_ind4 = third_second1_ind[third4]
-# visualize_pred(np.asarray(third_boards_second1[third_ind4]), np.asarray(third_outputs_second1[third_ind4]), np.asarray(third_targets_second1[third_ind4]), outputOn=True, targetOn=True, save=True, filename='third4.png')
-#
-# # Find the most common 4-piece positions for the most common opening
-# fourth_inds = board_subset_len(boards_list, 4)
-# fourth_boards = [boards_list[i] for i in fourth_inds]
-# fourth_outputs = [outputs_list[i] for i in fourth_inds]
-# fourth_targets = [targets_list[i][0] for i in fourth_inds]
-#
-# opening3 = third_boards_second1[third_ind1]
-# opening3[third1] = 1
-# fourth_inds_op1 = board_subset_pattern(fourth_boards, opening3)
-# fourth_boards_op1 = [fourth_boards[i] for i in fourth_inds_op1]
-# fourth_outputs_op1 = [fourth_outputs[i] for i in fourth_inds_op1]
-# fourth_targets_op1 = [fourth_targets[i] for i in fourth_inds_op1]
-#
-# fourth_op1_rank, fourth_ind = board_subset_rank(fourth_boards_op1)
-# fourth1 = (13, 17, 18, 21)
-# fourth_ind1 = fourth_ind[fourth1]
-# visualize_pred(np.asarray(fourth_boards_op1[fourth_ind1]), np.asarray(fourth_outputs_op1[fourth_ind1]), np.asarray(fourth_targets_op1[fourth_ind1]), outputOn=False, targetOn=False, save=True, filename='fourth1.png')
-# fourth2 = (13, 17, 9, 18)
-# fourth_ind2 = fourth_ind[fourth2]
-# visualize_pred(np.asarray(fourth_boards_op1[fourth_ind2]), np.asarray(fourth_outputs_op1[fourth_ind2]), np.asarray(fourth_targets_op1[fourth_ind2]), outputOn=False, targetOn=False, save=True, filename='fourth2.png')
-# fourth3 = (13, 17, 14, 18)
-# fourth_ind3 = fourth_ind[fourth3]
-# visualize_pred(np.asarray(fourth_boards_op1[fourth_ind3]), np.asarray(fourth_outputs_op1[fourth_ind3]), np.asarray(fourth_targets_op1[fourth_ind3]), outputOn=False, targetOn=False, save=True, filename='fourth3.png')
-#
-# # Find the most common fifth move responses for the most common opening and 4-piece board
-# fourth1_inds = board_subset_pattern(fourth_boards_op1, fourth_boards_op1[fourth_ind1])
-# fifth_boards_fourth1 = [fourth_boards_op1[i] for i in fourth1_inds]
-# fifth_outputs_fourth1 = [fourth_outputs_op1[i] for i in fourth1_inds]
-# fifth_targets_fourth1 = [fourth_targets_op1[i] for i in fourth1_inds]
-# fifth_fourth1_rank, fifth_fourth1_ind = board_target_rank(fifth_targets_fourth1)
-# fifth1 = 9
-# fifth_ind1 = fifth_fourth1_ind[fifth1]
-# visualize_pred(np.asarray(fifth_boards_fourth1[fifth_ind1]), np.asarray(fifth_outputs_fourth1[fifth_ind1]), np.asarray(fifth_targets_fourth1[fifth_ind1]), outputOn=True, targetOn=True, save=True, filename='fifth1.png')
-# fifth2 = 15
-# fifth_ind2 = fifth_fourth1_ind[fifth2]
-# visualize_pred(np.asarray(fifth_boards_fourth1[fifth_ind2]), np.asarray(fifth_outputs_fourth1[fifth_ind2]), np.asarray(fifth_targets_fourth1[fifth_ind2]), outputOn=True, targetOn=True, save=True, filename='fifth2.png')
-#
-# # Find the most common 6-piece positions for the most common opening
-# sixth_inds = board_subset_len(boards_list, 6)
-# sixth_boards = [boards_list[i] for i in sixth_inds]
-# sixth_outputs = [outputs_list[i] for i in sixth_inds]
-# sixth_targets = [targets_list[i][0] for i in sixth_inds]
-#
-# opening5 = fifth_boards_fourth1[fifth_ind1]
-# opening5[fifth1] = 1
-# sixth_inds_op1 = board_subset_pattern(sixth_boards, opening5)
-# sixth_boards_op1 = [sixth_boards[i] for i in sixth_inds_op1]
-# sixth_outputs_op1 = [sixth_outputs[i] for i in sixth_inds_op1]
-# sixth_targets_op1 = [sixth_targets[i] for i in sixth_inds_op1]
-#
-# sixth_op1_rank, sixth_ind = board_subset_rank(sixth_boards_op1)
-# sixth1 = (9, 13, 17, 5, 18, 21)
-# sixth_ind1 = sixth_ind[sixth1]
-# visualize_pred(np.asarray(sixth_boards_op1[sixth_ind1]), np.asarray(sixth_outputs_op1[sixth_ind1]), np.asarray(sixth_targets_op1[sixth_ind1]), outputOn=False, targetOn=False, save=True, filename='sixth1.png')
-#
-# # Find the most common seventh move responses for the most common opening and 6-piece board
-# sixth1_inds = board_subset_pattern(sixth_boards_op1, sixth_boards_op1[sixth_ind1])
-# seventh_boards_sixth1 = [sixth_boards_op1[i] for i in sixth1_inds]
-# seventh_outputs_sixth1 = [sixth_outputs_op1[i] for i in sixth1_inds]
-# seventh_targets_sixth1 = [sixth_targets_op1[i] for i in sixth1_inds]
-# seventh_sixth1_rank, seventh_sixth1_ind = board_target_rank(seventh_targets_sixth1)
-#
-# seventh1 = 15
-# seventh_ind1 = seventh_sixth1_ind[seventh1]
-# visualize_pred(np.asarray(seventh_boards_sixth1[seventh_ind1]), np.asarray(seventh_outputs_sixth1[seventh_ind1]), np.asarray(seventh_targets_sixth1[seventh_ind1]), outputOn=True, targetOn=True, save=True, filename='seventh1.png')
-# seventh2 = 14
-# seventh_ind2 = seventh_sixth1_ind[seventh2]
-# visualize_pred(np.asarray(seventh_boards_sixth1[seventh_ind2]), np.asarray(seventh_outputs_sixth1[seventh_ind2]), np.asarray(seventh_targets_sixth1[seventh_ind2]), outputOn=True, targetOn=True, save=True, filename='seventh2.png')
-#
-# # Find the most common paths for the second and third 2-piece boards
-# second2_inds = board_subset_pattern(second_boards_op1, second_boards_op1[second_ind2])
-# third_boards_second2 = [second_boards_op1[i] for i in second2_inds]
-# third_outputs_second2 = [second_outputs_op1[i] for i in second2_inds]
-# third_targets_second2 = [second_targets_op1[i] for i in second2_inds]
-# third_second2_rank, third_second2_ind = board_target_rank(third_targets_second2)
-# third_alt1 = 14
-# third_indalt1 = third_second2_ind[third_alt1]
-# visualize_pred(np.asarray(third_boards_second2[third_indalt1]), np.asarray(third_outputs_second2[third_indalt1]), np.asarray(third_targets_second2[third_indalt1]), outputOn=True, targetOn=True, save=True, filename='third_alt1.png')
-#
-# second3_inds = board_subset_pattern(second_boards_op1, second_boards_op1[second_ind3])
-# third_boards_second3 = [second_boards_op1[i] for i in second3_inds]
-# third_outputs_second3 = [second_outputs_op1[i] for i in second3_inds]
-# third_targets_second3 = [second_targets_op1[i] for i in second3_inds]
-# third_second3_rank, third_second3_ind = board_target_rank(third_targets_second3)
-# third_alt2 = 14
-# third_indalt2 = third_second3_ind[third_alt2]
-# visualize_pred(np.asarray(third_boards_second3[third_indalt2]), np.asarray(third_outputs_second3[third_indalt2]), np.asarray(third_targets_second3[third_indalt2]), outputOn=True, targetOn=True, save=True, filename='third_alt2.png')
-#
-#
-# opening3_alt1 = third_boards_second2[third_indalt1]
-# opening3_alt1[third_alt1] = 1
-# fourth_inds_op2 = board_subset_pattern(fourth_boards, opening3_alt1)
-# fourth_boards_op2 = [fourth_boards[i] for i in fourth_inds_op2]
-# fourth_outputs_op2 = [fourth_outputs[i] for i in fourth_inds_op2]
-# fourth_targets_op2 = [fourth_targets[i] for i in fourth_inds_op2]
-#
-# fourth_op2_rank, fourth_ind_alt1 = board_subset_rank(fourth_boards_op2)
-# fourth_alt1 = (14, 17, 13, 18)
-# fourth_indalt1 = fourth_ind_alt1[fourth_alt1]
-# visualize_pred(np.asarray(fourth_boards_op2[fourth_indalt1]), np.asarray(fourth_outputs_op2[fourth_indalt1]), np.asarray(fourth_targets_op2[fourth_indalt1]), outputOn=False, targetOn=False, save=True, filename='fourth_alt1.png')
-#
-# opening3_alt2 = third_boards_second3[third_indalt2]
-# opening3_alt2[third_alt2] = 1
-# fourth_inds_op3 = board_subset_pattern(fourth_boards, opening3_alt2)
-# fourth_boards_op3 = [fourth_boards[i] for i in fourth_inds_op3]
-# fourth_outputs_op3 = [fourth_outputs[i] for i in fourth_inds_op3]
-# fourth_targets_op3 = [fourth_targets[i] for i in fourth_inds_op3]
-#
-# fourth_op3_rank, fourth_ind_alt2 = board_subset_rank(fourth_boards_op3)
-# fourth_alt2 = (14, 17, 18, 21)
-# fourth_indalt2 = fourth_ind_alt2[fourth_alt2]
-# visualize_pred(np.asarray(fourth_boards_op3[fourth_indalt2]), np.asarray(fourth_outputs_op3[fourth_indalt2]), np.asarray(fourth_targets_op3[fourth_indalt2]), outputOn=False, targetOn=False, save=True, filename='fourth_alt2.png')
-#
-#
-# fourth1_alt1inds = board_subset_pattern(fourth_boards_op2, fourth_boards_op2[fourth_indalt1])
-# fifth_boards_fourth_alt1 = [fourth_boards_op2[i] for i in fourth1_alt1inds]
-# fifth_outputs_fourth_alt1 = [fourth_outputs_op2[i] for i in fourth1_alt1inds]
-# fifth_targets_fourth_alt1 = [fourth_targets_op2[i] for i in fourth1_alt1inds]
-# fifth_fourthalt1_rank, fifth_fourthalt1_ind = board_target_rank(fifth_targets_fourth_alt1)
-# fifth_alt1 = 11
-# fifth_indalt1 = fifth_fourthalt1_ind[fifth_alt1]
-# visualize_pred(np.asarray(fifth_boards_fourth_alt1[fifth_indalt1]), np.asarray(fifth_outputs_fourth_alt1[fifth_indalt1]), np.asarray(fifth_targets_fourth_alt1[fifth_indalt1]), outputOn=True, targetOn=True, save=True, filename='fifth_alt1.png')
-#
-# fourth1_alt2inds = board_subset_pattern(fourth_boards_op3, fourth_boards_op3[fourth_indalt2])
-# fifth_boards_fourth_alt2 = [fourth_boards_op3[i] for i in fourth1_alt2inds]
-# fifth_outputs_fourth_alt2 = [fourth_outputs_op3[i] for i in fourth1_alt2inds]
-# fifth_targets_fourth_alt2 = [fourth_targets_op3[i] for i in fourth1_alt2inds]
-# fifth_fourthalt2_rank, fifth_fourthalt2_ind = board_target_rank(fifth_targets_fourth_alt2)
-# fifth_alt2 = 20
-# fifth_indalt2 = fifth_fourthalt2_ind[fifth_alt2]
-# visualize_pred(np.asarray(fifth_boards_fourth_alt2[fifth_indalt2]), np.asarray(fifth_outputs_fourth_alt2[fifth_indalt2]), np.asarray(fifth_targets_fourth_alt2[fifth_indalt2]), outputOn=True, targetOn=True, save=True, filename='fifth_alt2.png')

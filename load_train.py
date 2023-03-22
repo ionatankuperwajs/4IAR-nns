@@ -8,7 +8,7 @@ from training import train
 import torch
 import os
 
-#%% RUN FROM THE COMMAND LINE
+#%% Run from the command line
 
 def main(model_name, model_version, num_layers, num_units, bottleneck, num_filters, filter_size, stride, padding, batch_size,
          n_epochs, learning_rate, moves_path, data_path, continue_train):

@@ -7,7 +7,7 @@ from network import Linear, LinearSkip, CNN
 from testing import test_performance, test_performance_minimal
 import torch
 
-#%% RUN FROM THE COMMAND LINE
+#%% Run from the command line
 
 def main(model_name, model_version, moves_path, data_path):
 
