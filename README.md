@@ -4,7 +4,7 @@
 
 ## Approach
 
-This repository implements networks as models of human play in 4-in-a-row. The networks are trained and tested on human decisions in large-scale data. Trained networks are available upon request, and the cognitive model code is avilabile at https://github.com/ionatankuperwajs/4IAR-improvements.
+This repository implements networks as models of human play in 4-in-a-row. The networks are trained and tested on human decisions in large-scale data. Trained networks are available upon request, and the cognitive model code is available at https://github.com/ionatankuperwajs/4IAR-improvements.
 
 ## File description
 
