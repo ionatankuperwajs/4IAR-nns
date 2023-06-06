@@ -91,11 +91,11 @@ train_2 = [2.184, 2.176, 2.184, 2.160, 2.161, 2.154, 2.151, 2.167, 2.156, 2.163,
 train_3 = [2.156, 2.165, 2.189, 2.172, 2.167, 2.210, 2.158, 2.210, 2.202, 2.156,
            2.159, 2.183, 2.204, 2.168, 2.208, 2.154, 2.211, 2.179, 2.152, 2.159]
 
-train_avgs = [np.average(train), np.average(train_1), np.average(train_2), np.average(train_3)]
-train_errors = [stats.sem(train), stats.sem(train_1), stats.sem(train_2), stats.sem(train_3)]
+train_avgs = [np.min(train), np.min(train_1), np.min(train_2), np.min(train_3)]
+# train_errors = [stats.sem(train), stats.sem(train_1), stats.sem(train_2), stats.sem(train_3)]
 
 fig, ax = plt.subplots(figsize=(6,4))
-ax.bar([0.075, 0.325, 0.575, 0.825], train_avgs, yerr=train_errors, width=0.05, color='peachpuff', label='train')
+ax.bar([0.075, 0.325, 0.575, 0.825], train_avgs, width=0.05, color='peachpuff', label='train')
 ax.bar([0.125, 0.375, 0.625, 0.875], model_avgs, yerr=model_errors, width=0.05, color='darkorange', label='test')
 # ax.scatter(np.concatenate([np.repeat(0.1,20), np.repeat(0.35,20), np.repeat(0.6,20), np.repeat(0.85,20)]),
 #            np.concatenate([train, train_1, train_2, train_3]), color='darkorange', alpha=0.2, label='train')
@@ -108,8 +108,8 @@ ax.legend(frameon=False,loc='upper right')
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 
-plt.show()
-# plt.savefig('improvement_comparison.png', format='png', dpi=1000, bbox_inches='tight')
+# plt.show()
+plt.savefig('improvement_comparison.png', format='png', dpi=1000, bbox_inches='tight')
 
 #%% Comparing likelihoods per move between models (density plot)
 
